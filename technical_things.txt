@@ -1,0 +1,1577 @@
+Q.1) Can we use ALB as ingress in Kubernetes?
+-> yes, you can use AWS Application Load Balancer (ALB) as an Ingress in Kubernetes - using the AWS Load Balancer Controller. 
+
+How it works: the AWS Load Balancer Controller is a Kubernetes controller that automatically provisions ALBs in response to kubernetes ingress or service resources.
+
+It supports:
+- path-based routing
+- Host-based routing
+- SSL termination
+- Redirects
+- WebSockets 
+
+Steps to use ALB as Ingress:
+
+1) Install the AWS Load Balancer Controller: 
+- Add the IAM policy for the controller to your worker nodes or create an IAM ROLE WITH IRSA (IAM Roles for Service Accounts).
+- Deploy the controller using Helm.
+2) Annotate your Ingress resources:
+- use annotations to configure ALB-specific behaviours, like target group settings, SSL, etc.
+3) use alb.ingress.kubernetes.io/* annotations:
+
+---------------------------------------------------------------------------------------------
+
+Q.2) What is the purpose of creating a user in a Dockerfile?
+-> Creating a user in a Dockerfile serves both security and best-practice purposes.
+
+1) Security: Avoid Running as Root
+By default, Docker container run as the root user unless you explicitly specify another user. Running as root inside a container can be risky:
+- if the container is compromised, an attacker gets root access inside the container.
+- with certain Docker misconfigurations, it could lead to escalations on the host.
+Creating and using a non-root user reduces the attack surface.
+
+2) FIlesystem Permissions
+Creating a specific user helps ensure that:
+- App processes only have access to the files they need.
+- volumes and mounted directories have correct ownership.
+
+3) Compliance & Auditing
+Many orgs (esp. in regulated industries) require containers not to run as root - for PCI, HIPAA, etc.
+
+Example Docker file ->
+
+FROM node:18
+
+# create a user and group
+RUN grouped -r appgroup && user add -r -g appgroup appuser
+
+# set worker and give ownership
+WORKDIR /app
+COPY . .
+RUN chown -R appuser:appgroup /app
+
+# Switch to the new user
+USER appuser
+
+CMD ["node", "server.js"] 
+
+-------------------------------------------
+
+
+Q.3) if we have a file with a name other than Dockerfile, can you run it to create a Docker image? If yes, please mention the command.?
+-> yes, we can absolutely build a Docker image from a file with a name other than Dockerfile.
+We just need to specify the file name using the -f option in the docker build command.
+Example - suppose your docker file is named MyDockerfile instead of the default Dockerfile:
+-> docker build -f MyDockerfile -t my image:latest .
+-> docker build -f <custom_filename> -t <image_name> <build_context>
+
+--------------------------------------------------------------
+
+Q.4) in Docker run, what does -P signify?
+-> in the docker run command, the -p flag tells Docker to publish all exposed ports of the container to random ports on the host machine. When we build a Docker image, the Dockerfile may contain one or more EXPOSE instructions, like: EXPOSE 80, EXPOSE 443
+This declares that the containers listens on ports 80 and 443 internally.
+Docker run -P my image
+
+--------------------------------------------------------------
+
+Q.5) in Terraform, what do explicit and implicit mean?
+-> in Terraform, the terms explicit and implicit refer to how dependencies between resources are defined, how terraform knows the order in which to create, modify, or destroy resources.
+-> An implicit dependency is created automatically by terraform when one resource references another in its configuration.
+
+Example -> 
+Resource "aws_vpc" "my_vpc" {
+  cidr_block = "10.0.0.0/16"
+}
+
+Resource "aws_subnet" "my_subnet" {
+  vpc_id = aws_vpc.my_vpc.id
+  cidr_block = "10.0.1.0/24"
+}
+
+- aws_subnet.my_subnet depends on aws_vpc.my_vpc
+- Because it references aws_vpc.my_vpc.id
+- Terraform automatically knows to create the VPC first, then the subnet
+This is implicit dependency - no extra keyword needed.
+
+-> Explicit Dependency ->
+An explicit dependency is when you manually tell Terraform that one resource depends on another, using the depends_on argument.
+
+Resource "aws_instance" "web" {
+  Ami = "ami-123456"
+  Instance_type = "t2.micro"
+  depends_on = [aws_s3_bucket.logs]
+}
+
+Resource "aws_s3_bucket" "logs" {
+  Bucket = "my-log-bucket"
+}
+
+- Even though the EC2 instance doesn't reference the S3 bucket.
+- The depends_on argument explicitly tells Terraform to create the bucket first.
+- This is explicit dependency - you manually define the order.
+
+--------------------------------------------------------------
+
+Q.6) What is a Pod in Kubernetes? Create a pod.yaml for a single-container pod running Nginx.
+-> A Pod is the smallest deployable unit in Kubernetes, it represents one or more containers that share: the same network namespace (IP address and ports), Storage volumes, And can communicate via localhost.
+Typically,  a pod contains one container, but it can also contain multiple tightly coupled containers (like a sidecar pattern)
+A Pod = one or more containers + shared resources (network, storage, metadata)
+
+Example: pod.yaml for a single-container Nginx Pod
+
+apiVersion: v1
+Kind: Pod
+Metadata:
+   Name: nginx-pod
+   Labels:
+     App: nginx
+Spec:
+  Containers:
+    -name : nginx-container
+     Image: nginx:latest
+     Ports:
+       - containerPort: 80
+
+Explanation:
+- apiVersion:v1 -> Pods belong to the core API group.
+- kind.Pod -> Defines the resource type.
+- metadata -> contains identifying data like name and labels.
+- spec -> Defines the desired state (containers, images, ports, etc.)
+- containers -> List of container definitions (here just one: Nginx).
+- containerPort: 80 -> Exposes port 80 inside the Pod for HTTP traffic.
+
+-> to create the pod
+Kubectl apply -f pod.yaml
+
+-> To verify:
+Kubectl get pods
+Kubetcl describe pod nginx-pod
+Kubectl logs nginx-pod
+
+--------------------------------------------------------------  
+
+Q.7) What is a Deployment in Kubernetes? Write a deployment.yaml for deploying 3 replicas of an Nginx container.
+-> A Deployment in Kubernetes is a higher-level abstraction that manages a set of identical pods. It ensures that:
+- The desired number of Pods are always running (self-healing).
+- you can update (rolling updates) or rollback your applications safely.
+- it provides scaling (replicas) and version control for pods.
+-> A deployment manages ReplicaSets, and each ReplicaSet manages Pods.
+
+apiVersion: apps/v1
+Kind: Deployment
+Metadata:
+   Name: nginx-deployment
+   Labels:
+      App: nginx
+Spec:
+  Replicas: 3
+  Selector:
+     matchLabels:
+       App: nginx
+  Template:
+    Metadata:
+      Labels:
+        App: nginx
+    Spec:
+      Containers:
+        - name: nginx
+          Image: nginx:latest
+          Ports:
+            - containerPort: 80
+
+To Deploy ->
+Kubectl apply -f deployment.yaml
+
+To verify ->
+- kubectl get deployments
+- kubectl get pods
+- kubectl describe deployment nginx-deployment
+
+-----------------------------------------------------------------
+
+Q.8) What is a Service in Kubernetes, and what are the types of Services?
+-> A service in Kubernetes is an abstraction that defines a stable network endpoint to access one or more Pods. Pods are ephemeral - they can be created, destroyed, or rescheduled at any time, so their IP address change frequently.
+- Cluster ip -> Exposes the service internally within the cluster, only inside the Cluster.
+- NodePort -> Exposes the service on a static port (30000-32767) on each Node's IP, From outside the cluster using <NodeIP>:<NodePort>
+- LoadBalancer -> Provisions an external load balancer (from cloud provider), From outsode the cluster via public IP.
+
+- Example - ClusterIP Service for Nginx Deployment
+ 
+apiVersion: v1
+Kind: Service
+Metadata:
+  Name: nginx-service
+Spec:
+  Selector:
+     App: nginx
+  Ports:
+    - protocol: TCP
+      Port: 80
+      targetPort: 80
+  Type: ClusterIP
+
+- To Create ->
+Kubectl apply -f service.yaml
+
+- To Verify:
+Kubectl get services
+Kubectl describe service nginx-service
+
+--------------------------------------------------------
+
+Q.9) When would you use each type of Kubernetes Service (ClusterIP, NodePort, LoadBalancer, ExternalName)?
+->
+- ClusterIP -> use it when you want internal-only-communication within the cluster, Microservices talking to each other inside the cluster (e.g., frontend -> backend -> database), internal APIs or system components that don't need public access.
+
+- NodePort -> use it when you want to access a service from outside the cluster, but don't have a cloud Load balancer, best for Development or testing environments, Bare-metal or on-perm clusters (no cloud LB integration), Temporary external access for debugging.
+
+- LoadBalancer -> use it when you need public internet access with a cloud-managed load balancer, best for production workloads in cloud environments (AWS, GCP, Azure), Exposing web apps, APIs, or ingress controller publicly.
+
+----------------------------------------------------------
+ 
+Q.10) Write a simple Terraform script to provision a virtual machine on AWS.
+-> main.tf
+
+# -------------------------
+# 1. Provider Configuration
+# -------------------------
+
+Provider "aws" {
+  Region = "us-east-1"  # Change to your desired AWS region
+}
+
+# --------------------------
+# 2. EC2 Key Pair (optional)
+# --------------------------
+# you can use an existing key pair or create one
+Resource "aws_key_pair" "my_key" {
+  key_name = "my-key"
+  public_key = file("~/.ssh/id_rsa.pub") # path to your public SSH key
+}
+
+# --------------------------------
+# 3. Security Group
+# --------------------------------
+Resource "aws_security_group" "vm_sg" {
+    Name = "vm_sg"
+    Description = "Allow SSH and HTTP access"
+}
+# ----------------------------------
+# 4. EC2 Instance
+# ----------------------------------
+Resource "aws_instance" "my_vm" {
+  Ami = "ami-87yhuh78yyuh"  # Amazon Linux 2 in us-east-1
+  instance_type = "t2.micro"  # Free-tier eligible
+  key_name = aws_key_pair.my_key.key_name
+  security_groups = [aws_security_group.vm_sg.name]
+
+  Tags = {
+    Name = "MyTerraformVM"
+  }
+}
+
+- Steps to Run:
+- Initialise Terraform -> terraform init
+- Preview the changes -> terraform plan
+- Apply the configuration -> terraform apply
+
+- A security group allowing SSH (22) and HTTP (80)
+
+-----------------------------------------------------------------
+
+Q.11) Explain port, targetPort, and nodePort in a Kubernetes service.
+->
+- Port -> 
+- Definition: The port that the Service exposes inside the cluster.
+- Purpose: Clients inside the cluster use this port to access the service.
+- Applies to: All service types (ClusterIP, Nodeport, Loadbalancer)
+- Example:
+    Ports:
+      - port: 80
+
+- targetPort ->
+- Definition: The port on the pod that the service forwards traffic to.
+- Purpose: Maps Service traffic to the cot=rrect container port inside the pod.
+- Type: can be a number (port number) or a name (from the container port)
+- Example:
+  Ports:
+    - port: 80
+      targetPort: 8080
+
+- nodePort (only for NodePort or LoadBalancer)
+- Definition: A statistical port on each node that maps to the service.
+- purpose: Allows external traffic to reach the service via <NodeIO>:<nodePort>.
+- Range: Default is 30000-32767
+- Example: 
+  Ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 32080
+
+--------------------------------------------------------------
+
+Q.12) How would you expose a Kubernetes application externally?
+-> Exposing a Kubernetes application externally depends on how you want it to be accessible - either within the cluster, from outside via a node IP, or through a cloud load balancer. Here's a clear breakdown with options and examples:
+-> Using a NodePort Service ->
+ - Expose the application on a static port on every node.
+ - Can be accessed externally via <NodeIP>:<NodePort>.
+ - Simple and works for testing or on-perm clusters.
+
+- apiVersion: v1
+  Kind: Service
+  Metadata:
+    Name: nginx-nodeport
+  Spec:
+    Type: NodePort
+    Selector:
+      App: nginx
+    Ports:
+      - port: 80   # Service port
+        targetPort: 80   # Pod container port
+        nodePort: 30080  # External node port
+
+-> Using a LoadBalancer Service (cloud environments)
+ - Creates a cloud provider load balancer automatically.
+ - Provides a public IP to access the application externally.
+ - Ideal for production apps in AWS, GCP, Azure, etc.
+
+- apiVersion: v1
+  Kind: Service
+  Metadata:
+     Name: nginx-lb
+  Spec:
+    Type: LoadBalancer
+    Selector:
+       App: nginx
+    Ports:
+      - port: 80
+        targetPort: 80
+
+Note -> After creation, "kubectl get service nginx-lb" will show a public IP.
+
+-> Using an Ingress
+- Provides HTTP/HTTPS routing for multiple services using hostnames or paths.
+- Requires an Ingress Controller (like NGINX Ingress Controller)
+- More flexible than NodePort or LoadBalancer.
+
+- apiVersion: networking.k8s.io/v1
+  Kind: Ingress
+  Metadata:
+     Name: nginx-ingress
+  Spec:
+    Rules:
+      - host: myapp.example.com
+        http:
+          Paths:
+            - path: /
+              pathType: Prefix
+              Backend:
+                 Service:
+                    Name: nginx-service
+                    Port:
+                       Number: 80
+
+- note -> Access it via: http://myapp.example.com
+
+-----------------------------------------------------------  
+
+Q.13) What is Helm, and what are its components (Chart, Repository, Release)?
+-> Helm is a package manager for Kubernetes, similar to how:
+Apt works for Ubuntu, yum works for RHEL, 6pm works for Node.js
+Helm helps you define, install, and manage Kubernetes applications more easily and consistently, Instead of manually writing multiple YAML files (for Deployments, Services, Ingress, etc.), you can use Helm to bundle them together into a single reusable package called a Chart.
+- package complex Kubernetes manifests into a single deployable unit (a chart)
+- Manage configuration using values files.
+- Perform upgrade, rollbacks, and version control.
+- Simplify deployments (e.g., "helm install nginx" instead of 5 YAMLs)
+
+-> Helm Components ->
+- Chart -> A package of pre-configured Kubernetes resources. It contains templates (YAML files), metadata, and default configuration values.
+- Repository -> A Collection of Charts stored at a central or private location. Helm can pull Charts from these repos.
+- Release -> A running instance of a Chart in a Kubernetes cluster. Every install of a Chart creates a new Release.
+
+-------------------------------------------------------
+
+Q.14) What is the difference between EXPOSE in a Dockerfile and docker run -p?
+-> EXPOSE (in Dockerfile)
+Expose is a metadata instruction in a Dockerfile that documents which port(s) the container intends to listen on at runtime.
+It does NOT actually publish the port - it just tells users (and tools like Docker Compose) that "this container listen on this port"
+- Example ->
+ FROM nginx:latest
+ EXPOSE 80
+
+- This means: "My application inside the container listen on port 80."
+- But it's only informational - it doesn't open or map any ports to the host machine.
+
+- Note -> you can check it with: docker inspect <image-name>
+And look under "ExposedPorts"
+
+-> docker run -p ->
+The -p (or --publish) flag actually Maps a port from your host machine to the container port, enabling external access.
+Syntax: docker run -p <host_port>:<container_port> <image>
+Example: docker run -p 8080:80 nginx
+
+- Maps port 8080 on your host -> port 80 inside the container.
+- You can now access Nginx at http://localhost:8080.
+
+- In short:
+- EXPOSE -> "My app listens on this port inside the container"
+- -p -> "Make this container's port reachable from outside" 
+
+-------------------------------------------------------------
+
+Q.15) How do you run Nginx on a Linux server using Docker?
+-> Make sure: Docker is installed and running on your Linux server
+Docker --version
+Systemctl status docker
+- you have internet access to pull images from Docker Hub.
+- Download the latest official Nginx image from Docker Hub: (docker pull nginx:latest)
+- Run an Nginx container and expose it to the host machine: (docker run -d -p 8080:80 --name mynginx nginx)
+
+Explanation:
+- --name mynginx: Names your container "mynginx."
+- p 80:80: maps port 80 on the host -> port 80 inside the container
+-d: Runs the container in detached mode (in background)
+- nginx: the image name.
+
+After that, open your browser and go to:
+http://<your_server_ip>
+
+- Manage the container
+- docker ps
+- docker stop mynginx
+- Docker start mynginx
+- Docker logs mynginx
+Docker exec -it mynginx bash
+
+---------------------------------------------------------------
+
+Q.16) Explain HTTP, HTTPS, TCP, and UDP with examples.
+-> 
+1. HTTP (Hyper Text Transfer Protocol)
+Http is an application-layer protocol used for transmitting web pages and data over the internet.
+- key points:
+- Runs on port 80 by default.
+- Stateless: Each request is independent.
+- plain text transmission - not secure
+- Uses Tcp underneath for reliable delivery.
+
+When you open this in a browser:
+1. Your browser sends an HTTP request to the web server.
+2. The server responds with an HTML page.
+
+2. HTTPS(Hyper Text Transfer Protocol Secure)
+-> HTTPS is the secure version of HTTP, which encrypts data using SSL/TLS (Secure Socket Layer / Transport Layer Security)
+- Key points:
+- Runs on port 443.
+- Encrypts all communication between browser and server.
+- Protects against data theft and man-in-the-middle attacks.
+- still uses TCP underneath for reliability.
+- A TLS handshake happens (encryption setup)
+- Then normal HTTP communication occurs - but encrypted
+
+3. TCP (Transmission Control Protocol)
+TCP is a transport-layer protocol that provides reliable, ordered, and error-checked delivery of data between applications.
+
+- Key points:
+- Connection-Oriented -> Requires a handshake (SYN, SYN-ACK, ACK)
+- Guarantees data arrives in order and without loss.
+- Slower than UDP because of reliability overhead.
+
+Example:
+When you open a website (https://example.com):
+- your browser uses TCP to connect to port 443.
+- TCP ensures all packets arrive correctly.
+- If packets are lost, TCP retransmits them.
+- Used by:
+- HTTP/HTTPS
+- SSH
+- FTP
+- Email (SMTP, IMAP, POP3)
+
+4. UDP (User Datagram Protocol)
+UDP is a connectionless transport protocol - faster but unreliable compared to TCP.
+- Key points:
+- No handshake or delivery guarantee.
+- Data can be lost or arrive out of order.
+- Runs on various ports depending on the service
+
+Example ->
+- DNS -> Uses UDP port 53 (fast name lookups)
+- Video streaming, VoIP, and online gaming -> Use UDP for low latency.
+
+- Used by ->
+- DNS
+- Streaming (Youtube, Zoom, etc)
+- Gaming
+- DHCP
+
+- Analogy ->
+Like sending a postcard - no guarantee it reaches, but it's fast.
+
+-------------------------------------------------------------------------
+  
+Q.17) What is a Dockerfile? Write a basic Dockerfile for a Node.js application.
+-> A Dockerfile is a text file that contains a set of instructions for building a Docker image.
+Think of it like a recipe - it tells Docker:
+- What base image to use
+- which dependencies to install
+- How to copy source code
+- How to run your application
+- When you run docker build, Docker reads the Dockerfile line by line to create an image.
+
+Docker file ->
+
+# use the official Node.js LTS image as base
+FROM node:18
+
+# Set working directory inside container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN nam install --production
+
+# COPY all app files into container
+COPY . .
+
+Expose the app port
+EXPOSE 3000
+
+# Define the command to run the app
+CMD ["node","server.js"]
+
+-- How to Build and Run
+- Build the Docker image:
+- docker build -t my-node-app .
+
+- Run the container:
+- docker run -d -p 3000:3000 my-node-app
+
+Access the app:
+Open your browser and go to:
+http://localhost:3000
+
+--------------------------------------------------------
+
+Q.18) What is a base image in Docker? Which base image would you use for Python or Node.js?
+-> A base image is the starting point for building a Docker image.
+It's like the foundation of a house - everything else (tour app code, dependencies, configurations) is built on top of it.
+
+-- Two types of Base images
+1) Official Base images:-
+Maintained by Docker or verified publisher (e.g., ubuntu, alpine, node, python, etc.)
+-> Reliable and secure.
+
+2) Customer Base Images:
+Created by you or your organisation for internal use (e.g., company-standard images with pre-installed tools).
+
+-- Why Base Image matters
+Choosing the right base image affects:
+- Image size
+- Security (official images are more trusted)
+- Performance (lightweight images start faster)
+- Compatability with your app's language/runtime
+
+-- For python Applications
+1) Full image (Debian-based):
+- FROM python:3.10
+
+2) Slim version (smaller)
+- FROM python:3.10-slim
+
+3) Alpine version (minimal):
+- FROMpython3.10-alpine
+
+-- Fir Node.js Applications
+1) Full image (Debian-based):
+- FROM node:18
+
+2) Slim version:
+- FROM node:18-slim
+
+3) Alpine version:
+- FROM node:18-alpine
+
+----------------------------------------------------------
+
+Q.19) How do you check for open ports on a Linux system?
+-> using command "netstat -tlnup"
+- t -> TCP port
+- u -> UDP port
+- l -> Listening Ports only
+- n -> show numeric address (no DNS lookups)
+
+-------------------------------------------------------------
+
+Q.20) What are the benefits of using a firewall?
+-> A firewall is a network security system (hardware or software) that monitors and controls incoming and outgoing network traffic based on predefined security rules.
+Think of it as a security guard at je gate - it decides which traffic can or leave your system or network.
+
+- Benefits of using a Firewall ->
+- Protects Agains Unauthorised Access
+- Monitors Network Traffic
+- Blocks Malicious and Attacks
+- Defines Access Control Policies
+- Prevents Data Exfiltration
+- Segregate Network Zones
+- Helps with Compliance and Auditing.
+
+----------------------------------------------------------------
+
+Q.21) What is the use of Ingress and Ingress Controller in Kubernetes?
+-> Ingress in kubernetes ->
+Ingress is a Kubernetes API object that manage external access to service within your cluster - usually HTTP and HTTPS traffic.
+- simply analogy
+- service: Like a phone extension (each app has its own number).
+- ingress: Like the receptionist who takes calls (HTTP requests) and forwards them to the right extension based on the caller's input (URL or hostname).
+- What Ingress Does ->
+- Handles URL-based routing
+- Supports multiple domains or subdomains
+- Enables TLS/SSL termination (HTTPS)
+- Works as a reverse proxy
+- Reduces need for multiple LoadBalancers or NodePorts
+
+- Ingress YAML Example
+
+apiVersion: networking.k8s.io/v1
+Kind: Ingress
+Metadata:
+   Name: app-ingress
+   Annotations:
+      Nginx.ingress.kubernetes.io/rewrite-target: /
+Spec:
+  Rules:
+  - host: my apps.example.com
+    http:
+      Paths:
+      - path: /app1
+        pathType: Prefix
+        Backend:
+          Service:
+            Name: app1-service
+            Port:
+              Number: 80
+      - path: /app2
+        pathType: Prefix
+        Backend:
+          Service:
+            Name: app2-service
+            Port:
+              Number: 80
+
+- How it works:
+- Request to my apps.example.com/app1 -> goes to app1-service
+- Request to my apps.example.com/app2 -> goes to app2-service
+
+-> What is an Ingress Controller->
+- The Ingress resource itself is just a set of rules - it does nothing by itself, you need an Ingress Controller to implement those rules and actually handle the routing.
+Ingress Controller = the engine that makes Ingress work
+It watches for Ingress resources and configures an underlying proxy/load balancer (like Nginx or Traefik) to route traffic.
+
+- Quick Example flow->
+
+User (Browser) -> [ Load Balancer / External IP ] -> [ Ingress Controller (Nginx) ] -> [ Ingress Rules ] -> [ Kubernetes Service (app1-service) ] -> [ Pod (app1) ]
+
+- In short
+- Ingress = Defines how traffic should be routed.
+- Ingress Controller = Actually routes the traffic based on those rules.
+
+----------------------------------------------------------------
+ 
+Q.22) Explain the Kubernetes controllers: Deployment, StatefulSet, ReplicaSet, and DaemonSet.
+-> In Kubernetes, controllers are control loops that continuously monitor the desired state (defined in YAML manifests) and the actual cluster state, and make changes to bring the actual state closer to the desired one.
+- The main workload controllers you'll deal with are:
+Deployment, Statefulset, Replicaset, and daemonSet.
+
+1) ReplicaSet ->
+Purpose: Ensures a specified number of identical pods are running at all times, it's the basic building block for maintaining replicas (copies) os a pod, A ReplicaSet automatically creates or deletes pods to maintain the desired count, If one pod dies, the replicaSet replaces it.
+
+Apiversion: apps/v1
+Kind: Replicaset
+Metadata:
+  Name: nginx-replicaset
+Spec:
+   Replicas: 3
+   Selector:
+      matchLabels:
+        App: nginx
+   Template:
+     Metadata:
+       Labels:
+         app: nginx
+     Spec:
+       Containers:
+        - name: nginx
+          Image: nginx:latest
+
+Note -> We rarely create Replicases directly - instead, Deployments manage ReplicaSets automatically (to handle updates)
+
+2) Deployment ->
+- Purpose - Manages ReplicaSets and provides rolling updates and rollbacks for stateless applications. Most common controller for stateless workloads. When you change a Deployment (e.g., new image version), Kubernetes creates a new ReplicaSet and gradually replaces pods (rolling update), Can easily rollback to previous versions.
+
+apiVersion: apps/v1
+Kind: Deployment
+Metadata:
+  Name: nginx-deployment
+Spec:
+  Replicas: 3
+  Selectors:
+    matchLabels:
+      App: nginx
+  Template:
+    Metadata:
+      Labels:
+        App: nginx
+    Spec:
+      Containers:
+      - name: nginx
+        Image: nginx:1.25
+
+Note -> use when: you have stateless applications (web servers, APIs), you want rolling updates, rollbacks, versioning, and scaling.
+
+3) StatefulSet->
+- Purpose: manages stateful applications -pods that need stable network IDs, persistent storage, or ordered deployment. Each pod gets a unique, persistent identity (e.g., pod-0, pod-1,....). Wach pod can have its own persistentVolumeClaim (PVC), Pods are created, updated and deleted in order.
+
+apiVersion: apps/v1
+Kind: StatefulSet
+Metadata:
+   Name: mysql
+Spec:
+  serviceName: "mysql"
+  Replicas: 3
+  Selector:
+    matchLabels:
+      App: mysql
+  Template:
+    Metadata:
+      Labels:
+       App: mysql
+      Spec:
+        Containers:
+        - name: mysql
+          Image: mysql:8
+          volumeMounts:
+          - name: data
+            mountPath: /var/lib/mysql
+  volumeClaimTempletes:
+  - metadata:
+      Name: data
+    Spec:
+      accessMode: ["ReadWriteOnce"]
+      Resources:
+        Requests:
+         Storage: 5Gi
+
+-> use when -> Databases (MySQL, MongoDB, Cassandra, etc), Applications needing stable pod identity or storage, Ordered startup/shutdown (like cluster bootstrapping).
+
+4) DaemonSet ->
+- Purpose -> Ensures that one pod runs on every (or selected) Node in the cluster, Automatically adds a pod to new nodes that join the cluster, Removes Pods when nodes live, Often used for node-level agents or monitoring.
+
+apiVersion: apps/v1
+Kind: Daemonset
+Metadata:
+  Name: node-monitor
+Spec:
+  Selector:
+    matchLabels:
+     App: node-monitor
+    Template:
+      Metadata:
+        Labels:
+          App: node-monitor
+      Spec:
+        Containers:
+        - name: node-exporter
+          Image: prom/node-exporter: latest
+
+- use when -> you need one pod per node, log collectors (Fluent, Filebeat), Monitoring agents (Node Exporter), Network plugins (CNI)
+
+--------------------------------------------------------------
+
+Q.23) What is the difference between Deployment and ReplicaSet?
+-> ReplicaSet ->
+- Purpose: Ensure a specified number of identical pods are running at any time.
+- What it does: Maintains a stable set of pod replicas, if a pod fails or is deleted, the replicaSet creates a new one.
+- What is doesn't do ->
+- Does not support rolling updates or version management, if you change the pod template in a Replicaset, it won't automatically update existing pods - you'd have to delete and recreate them manually.
+
+-> Deployment ->
+- Purpose: provides declarative updates to pods and ReplicaSets - adds versioning, rollback, and rollout control on top of ReplicaSets.
+- What it does:-
+- Manages ReplicaSets automatically, Handles rolling updates (zero-downtime updates), Supports rollback to previous versions, Provides revision history and scaling.
+
+- How it works:-
+- When you create a Deployment, it creates a ReplicaSet under the hood, When you update the Deployment (e.g., change image version), it creates a new ReplicaSet, gradually replaces Pods from the old one -> new one
+
+apiVersion: apps/v1
+Kind: Deployment
+Metadata:
+  Name: my-deployment
+Spec:
+  Replicas: 3
+  Selector:
+    matchLabels:
+      App: nginx
+    Template:
+      Metadata:
+        Labels:
+          App: nginx
+      Spec:
+        Containers:
+          - name: nginx
+            Image: nginx:1.22
+
+In short -> ReplicaSet ensures Pod availability; Deployment ensures application lifecycle management. You almost never create ReplicaSets directly - you use Deployments instead.
+
+----------------------------------------------------------
+
+Q.24) What are Kubernetes Probes (Liveness, Readiness, Startup)?
+-> Kubernetes Probes are health checks performed by the Kubelet (the node agent) on containers. They tell Kubernetes whether your container is: Alive, Ready to receive traffic, Still starting up. These help Kubernetes decide whether to restart, remove from service, or wait for a container.
+
+- Types of Probes ->
+1) Liveness Probe ->
+Purpose:- checks if the container is alive (still running properly), if it fails, Kubernetes restarts the container, Prevents cases where an application is running but "stuck" (e.g., deadlock).
+
+livenessProbe:
+  httpGet:
+    Path: /healthz
+    Port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+Meaning:- After 10 seconds, K8s will check /healthz on port 8080 every 5 seconds. If it fails -> restart the container.
+
+2) Readiness Probe ->
+Purpose: Checks if the container is ready to serve requests. If ir fails, Kubernetes removes the  pod from service Endpoints (traffic won't be sent). The container is not restarted, just marked as unready until it passes.
+
+Readiness Probe:
+  topSocket:
+    Port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+Meaning :- After 5 seconds, check if port 8080 is open every 5 seconds. If fails -> Pod stays running but receives no traffic until it passes.
+
+3) Startup Probe ->
+Purpose: Checks if the container's applications has started successfully, useful for slow-starting apps (e.g., java, Oracle-based, or legacy apps), While the startup probe runs, liveness and readiness checks are disabled, once it succeeds, Kubernetes enables the other probes.
+
+startupProbe:
+  httpGet:
+    Path: /ready
+    Port: 8080
+  failureThreshold: 30
+  periodSeconds: 10
+
+Meaning :- K8s will check /ready every 10s, if it fails 30 times, then the considered failed -> restarted
+
+In Short:-
+- "Liveness = Restart if unhealthy"
+- "Readiness = Don't send traffic until ready"
+- "Startup" wait longer before starting other checks.
+
+---------------------------------------------------------------------
+
+Q.25) What is the difference between Stateful and Stateless applications? Give examples.
+-> 
+1) Stateless Applications ->
+Definition:- A stateless application does not store any data or session information between requests. Each request is independent - the server doesn't remember anything from previous interactions. If one instance goes down, another can take over easily, easy to scale horizontally (add, remove replicas), common in micro services and cloud-native design.
+
+Example :- Web servers serving static content (e.g., Nginx, Apache), REST APIs where session info is stored in a DB token (not in memory), Frontend apps (React, Angular, etc.), Microservices calling external DBs for data.
+In Kubernetes managed using a Deployment, Pods are identical and interchangeable.
+
+2) Stateful Applications:-
+A stateful application stores data, session, or client state locally or in a persistent volume, Each request depends on past data or context, Each instance maintains unique data identity, scaling and restarting require state preservation, Needs persistent storage and consistent network identity.
+
+Example:- Databases: mysql, postgreSQL, MongoDB
+Message queues: Kafka, RabbitMQ
+Caching systems: Redis (in persistent mode)
+File storage services.
+
+In Kubernetes:-
+Managed using statefulset
+Pods have -> stable network IDs, Persistent volumes, Ordered deployment & scaling.
+
+In short:
+- "Stateless: Every request is new -> easier to scale and recover"
+- "Stateful: keeps memory or data between requests -> needs stable identity and storage."
+
+----------------------------------------------------------------------------
+ 
+Q.26) What are Namespaces in Kubernetes?
+-> A Namespace in Kubernetes is a logical partition inside a cluster, it's used to organise, isolate, and manage resources (like pods, services, deployments) within the same cluster.
+Think of it as a folder inside your Kubernetes cluster - each namespace contains its own set of objects.
+
+Purpose of Namespaces:- namespaces are designed to:
+
+1) Group resources logically -> separate environments: dev, test, prod
+2) Avoid naming conflicts-> you can have multiple Deployments named nginx - one in each namespace.
+3) Apply access control (RBAC) -> Control which users or teams can access specific namespaces.
+4) Set resource limits (via ResourceQuota, LimitRange) -> Example: limit CPU/memory usage for a team's namespace.
+
+-> Create a namespace:- kubectl create namespace dev
+
+-> List resources in a namespace:- kubectl get pods -n dev
+
+- Namespace isolation -> Namespaces isolate resource names and access, but not networking, pods from different namespaces can still communicate, unless restricted via NetworkPolicies
+
+-> Best Practices -> Use namespaces to separate environments (e.g., dev, qa,prod), Use RBAC and ResourceQuota for each namespace to control access and usage, Don't overuse namespace for every micro service - they're best for logical isolation, not per component separation.
+
+In short -> A namespaces is like a virtual cluster inside your Kubernetes cluster it helps organise, isolate, and manage resources efficiently.
+
+-----------------------------------------------------------
+
+Q.27) What is Port Forwarding in Kubernetes?
+-> port forwarding allows you to access a Pod, Service, or Deployment running inside a cluster from your local machine - without exposing it publicly. It temporarily maps a local port on your computer to a port inside a pod (or service). That means you can directly connect to the application inside Kubernetes as if it were running locally.
+
+Why it's used -> to debug application running inside pods, to rest APIs or web apps inside the cluster without creating a service or ingress, to access internal-only pods (like databases or internal APIs).
+
+-> kubectl port-forward <pod-name> <local-port>:<pod-port>
+
+- Important Notes -> port forwarding is temporary - it lasts until you stop the command (Ctrl + C), it works only while your kubectl session is active, it's mainly for local development ans debugging, not production, you must have network access and permissions to the pod (via kubectl context).
+
+- in short -> Port Forwarding lets you access a pod or service inside Kubernetes directly from your local machine by mapping local ports to pod ports - mainly used for debugging or testing without exposing the app externally.
+
+---------------------------------------------------------------
+
+Q.28) Which port is used by DNS (Route 53)?
+-> port no 53 is used by DNS (Route 53).
+
+----------------------------------------------------------------
+
+Q.29) which tool is used for managing Kubernetes deployments in a CI/CD pipeline?
+-> In a CI/CD pipeline, kubernetes deployments are typically managed using deployment automation tools that integrate with CI/CD platforms.
+Here are the most commonly used tools for managing Kubernetes deployments:
+Argo CD, Helm, Jenkins X, Tekton, Kustomize
+
+- Typical CI/CD Flow Example
+1) Developer pushes code -> GitHub/GitLab triggers pipeline
+2) Jenkins/Tekton builds and tests the application.
+3) Docker image pushed to registry.
+4) Deployment manifests (Helm/Kustomize) updated in Git.
+5) Argo CD or Jenkins deploys changes to Kubernetes cluster.
+
+---------------------------------------------------------------
+
+Q.30) what is docker swarm?
+-> docker swarm is a container orchestration tools. 
+
+----------------------------------------------------------------------
+
+Q.31) How do you implemented high availability and disaster recovery for RDS across regions?
+-> AWS RDS (Relational Database Service) provides multiple features to ensure both High Availability (HA) and Disaster Recovery (DR), but they serve different purposes:
+
+High Availability -> Keep the database running within the same region during AZ failures.
+Disaster Recovery (DR) -> Protect against entire failures - ensure cross-region recovery.
+
+1) High Availability (Within the Same Region)
+- Multi-AZ Deployment
+- When you enable Multi-AZ, RDS automatically creates a synchronous standby replica in a different Availability Zone (AZ) within the same region.
+- AWS Automatically handles :- Failover (in case the primary instance fails), Data replication (synchronous), DNS endpoint switching.
+
+2) Disaster Recovery (Across Regions) ->
+- Cross-Region Read Replica (Asynchronous Replication) ->
+- you can create a Read Replica in different AWS region, Replication is asynchronous, so there may be a small lag, you can promote the replica to a standalone database in case of a regional disaster.
+
+- In short ->
+- multi-AZ (HA):- protects against AZ failure - synchronous standby".
+- Cross-Region Read Replica (DR) :- protects against region failure - async replication + manual promotion.
+- Cross-region snapshots: cost-effective backup-based DR.
+- Use Route53 failover routing and ClowdWatch alerts for automation.
+
+---------------------------------------------------------------------
+
+Q.32) Explain the process to perform blue/green deployments in AWS using EC2 or ECS?
+-> here's clear breakdown of how Blue/Green Deployments work in AWS, using both EC2 (with Elastic Load Balancer) and ECS (with CodeDeploy or ECS services).
+
+- Blue/Green Deployment is a deployment strategy that minimises downtime and risk by running two separate environments:
+- Blue: The current live (production) environment.
+- Green: The new version of the application to be deployed.
+Once the green environment is verified to work correctly, traffic is switched from Blue -> Green. If something goes wrong, you can rollback instantly by switching traffic back to blue.
+
+1) Blue/Green Deployment on EC2 (using ELB + Auto Scaling + CodeDeploy)
+Architecture Overview
+- Blue environment: Current EC2 instances behind an Elastic Load Balancer (ELB)
+- Green environment: New Ec2 instances (new version of app) behind the same ELB or a new ELB.
+- AWS CodeDeploy: manages the switching and rollback
+
+-------------------------------------------------------------------------
+ 
+Q.33) what are the best practices for scaling EKS workloads in production?
+-> Scaling EKS (Amazon Elastic Kubernetes Services) workloads efficiently in production in one of the key responsibilities of a DevOps/SRE engineer.
+Here's comprehensive breakdown of best practices for scaling EKS workloads.
+1) Use the right Autoscaling Components.
+2) Configure Horizontal Pod Autoscaler (HPA) Properly.
+3) Use Cluster Autoscaler (CA) or Carpenter for Node Scaling.
+4) Use Vertical Pod Autoscaler (VPA) for Resource Optimisation.
+5) Optimise Node types Costs.
+6) Monitor and Tune Scaling.
+7) Use Multiple Node Groups (Workload Segmentation).
+8) Implement Rolling Updates and Surge Controls.
+9) Leverage AWS Tools and Add-ons.
+10) Regularly Review and Load Test.
+
+----------------------------------------------------------------------
+
+Q.34) How do you monitor and troubleshoot network latency issues between VPCs across regions?
+-> Monitoring and troubleshooting network latency between VPCs across AWS regions requires both visibility (metrics + traces) and diagnostic tools to pinpoint where the delay occurs - whether it's DNS, routing, or inter-region links.
+
+1) Understand the Architecture ->
+When VPC's are in different AWS regions, they typically communicate through:
+- VPC Peering
+- AWS Transit Gateway (TGW)
+- AWS Private Link
+- Public endpoints (via Internet Gateway or NAT)
+Each path introduces different latency characteristics - for example, VPC peering is faster than public routing, but still subject to inter-region distance.
+
+2) Continuous Monitoring: Measure Baseline Latency
+3) Use Network-Level Diagnostic Tools
+4) Troubleshooting Steps ->
+- Step 1 -> Verify Connectivity
+- Step 2 -> Check VPC Peering or TGW Steps
+- Step 3 -> Analyse Latency Trends
+- Step 4 -> Check Inter-Region AWS Latency
+- Step 5 -> Run Application-Level Tests
+- step 6 -> Best Practices to Minimise and Monitor Latency
+
+---------------------------------------------------------
+
+Q.35) what are the steps to securely connect on-perm infrastructure to AWS?
+-> 
+Q.36) How do you handle IP exhaustion in a VPC and what are your options?
+Q.37) Explain how you would automate patching for EC2 instances across multiple accounts?
+Q.38) How do you enforce compliance and governance in AWS organisations across accounts?
+Q.39) what are the different ways to control egress traffic from a private subnet in AWS?
+Q.40) Describe the steps to build an auto-healing infrastructure in AWS?
+Q.41) How would you troubleshoot intermittent packet drops between EC2 instances in the same AZ?
+Q.42) Explain the role of Transit Gateway in large-scale AWS networks and its limitations?
+
+----------------------------------------------------------------------------------------------
+
+Q.43) What is the difference between NLB, ALB, and Gateway Load Balancer? When to use each?
+-> ALB (Application Load Balancer) -> This is a load balancer that routes traffic to target groups based on the content of the request. It operates at the application layer (layer 7 in the OSI model) and supports HTTP, HTTPS, and WebSocket traffic. ALB is designed to handle high levels of traffic and provides advanced request routing features, such as support for multiple protocols, path-based routing, and ability to bind to multiple SSL certificates.
+
+Limitation:
+- Application LB per region - 20
+- Target groups - 3000
+
+Load Balancer Components Limits:
+- Listeners - 50
+- Targets load balancer - 1000
+- Subnet per Availability zone - 1
+- Rules - 100
+- Security groups - 5
+
+- NLB (Network Load Balancer) -> This is a load balancer that routes traffic to target groups based on IP address and TCP port. It operates at the network layer (layer 4 in the OSI model) and supports any TCP-based protocol. NLB is designed to handle high levels of traffic and provides ultra-low latencies.
+
+- Limitation:
+
+- Network LB per region - 20
+- Target groups - 3000
+
+Load Balancer Components Limits:
+
+- Listeners - 50
+- Targets per availability zone with cross-zone load balancing disabled - 200
+- Targets per availability zone with cross-zone load balancing enabled - 200
+- Subnet per Availability zone - 1
+- Target per availability zone with cross-zone load  
+
+-----------------------------------------------------------------
+
+Q.44) How would you secure access to AWS infrastructure for third-party vendors or consultants?
+-> Securing access for external vendors or consultants requires a strict, controlled, and auditable approach. The key is to provide least-privilege, time-bound, and monitored access using securing identity and network controls.
+- Use IAM Roles + Temporary Credentials 
+- Enforce Strong Authentication
+- Use AWS identity Center (SSO)
+- Implement Network Access Controls
+- Use just-in-Time (JIT) Access
+- Isolate Vendor Environment
+- Implement Logging & Monitoring
+- Validate Vendor Devices
+- Use key Management & Secrets Managements
+- Formal Onboarding & Offboarding.
+
+--------------------------------------------------------------
+
+Q.45) How do you manage secrets securely in a CI/CD pipeline using AWS services?
+-> - Use AWS Secrets manager or SSM Parameter Store
+- Grant Latest-privilege Access to the CI/CD Pipeline
+- Fetch Secrets Dynamically During the Build/Deploy Stage.
+- Use Encryption & key management (KMS)
+- Avoid Storing Secrets in Build Logs
+- Rotate Secrets Regularly
+- Isolate Secrets by Environment
+- Use OIDC for Github/GitLab Access (No Access Keys)
+- Enable Logging & Monitoring.
+
+--------------------------------------------------------------------
+
+Q.46) Explain a scenario where Route 53 latency-based routing caused issues and how to fix it?
+Q.47) what are VPC endpoints and when would you use interface vs gateway endpoints?
+Q.48) Describe how you would troubleshooting high CPU utilisation on a critical EC2 instance?
+Q.49) What are the pros and cons of using spot instance in production workloads?
+Q.50) Explain how AWS shield and WAF integrate with a global application hosted on CloudFront.
+Q.51) How do you perform zero-downtime upgrades for a state; application hosted on ECS or EKS?
+Q.52) How can you ensure S3 data protection against accidental deletion and overwrites?
+Q.53) What's your approach to cost optimisation in an environment with EC2, RDS, and Lambda?
+Q.54) How do you use AWS Config and CloudTrail for post-incident investigations and audit trails?
+Q.55) A pod keeps restarting with CrashLoopBackOff. How would you troubleshoot this issue?
+-> - Run kubectl describe pod to review events and diagnose the issue.
+   - Use kubectl logs --previous to inspect crash logs.
+   - check the container's liveness probes and image configurations for potential errors.
+   - validate environment variables and secrets to ensure they are correctly set.
+
+------------------------------------------------------------------------
+
+Q.56) After deploying a new version, users report failures. How would you respond? (Rolling Update Gone Wrong)
+-> - Execute kubectl rollout undo deployment to revert to the previous stable version.
+   - Review the deployment's status with kubectl rollout status to monitor the update process.
+   - Confirm that readiness and liveness probes are configured correctly to prevent faulty pods from joining the load balancer.
+
+---------------------------------------------------------------
+
+Q.57) your application requires persistent storage. How would you configure the pod specification? (App needs persistent storage)
+-> - create a persistentVolume (PV) and persistentVolumeClaim (PVC) for storage management.
+   - Attach the PVC to the pod specification under the volumes ans volume mounts sections.
+   - Choose the appropriate storage class (e.g., gp2 for AWS, azure file for Azure) based on workload requirements.
+
+------------------------------------------------------------------
+
+Q.58) How would you manage kubernetes deployments across dev, staging, and production environments? (Multi-Environment Deployments)
+-> - Leverage Helm or kustomise to perameterize your manifestos for environment-specific configurations.
+   - Maintain environment-specific values, such as values-dev.yaml, in version control.
+   - use namespaces or separate cluster to isolate resources for each environment, ensuring proper access control.
+
+---------------------------------------------------------------------
+
+Q.59) your pod id unable to access external APIs. What steps would you take to investigate? (Pod can't Reach External Services)
+-> - verify the network policies in place to ensure no restrictions are blocking egress traffic.
+   - Test DNS resolution inside the pod using tools like nslookup or dig to ensure proper connectivity.
+   - confirm the node's egress and firewall rules to rule out any external network issues.
+   - check the service account and proxy settings to ensure the pod has the correct permissions and network configuration.
+
+--------------------------------------------------------------------------
+
+Q.60) What's the difference between build and release pipelines in Azure DevOps?
+Q.61) How do you handle rollback in your deployment pipeline?
+Q.62) How do you secure secrets and credentials in your pipeline?
+Q.63) what's the difference between ENTRYPOINT and CMD in Docker?
+Q.64) what's steps do you follow when a container crashes repeatedly?
+Q.65) How do you perform a Zero-downtime deployment in Kubernetes?
+Q.66) What is a readiness probe vs a liveness probe?
+Q.67) how do you manage application configuration in EKS?
+Q.68) what monitoring tools have you used for kubernetes?
+Q.69) how do you centralise logs in a micro services environment?
+Q.70) what your approach to setting up alerts in AWS Monitor?
+Q.71) How do you handle secrets management across environments?
+Q.72) What is the parameter group in Amazon RDS, and what is its purpose?
+Q.73) How do I write a CloudFormation template to deploy both an EC2 instance and an Application Load Balancer (ALB).
+Q.74) What are ECS (Elastic Container Service) and ECR (Elastic Container Registry) in the context of containerisation?
+Q.75) How do I create Docker Images and push them to Amazon ECR?
+Q.76) In a multi-account setup using AWS CloudFormation, how can I create a single IAM role across all accounts?
+Q.77) If I have a 450MB Docker image, what are the best practices to optimise and reduce its size?
+Q.78) What is the difference between Docker and Kubernetes in container orchestration?
+Q.79) What is a pod in Kubernetes, and how does it function?
+Q.80) what is the difference between Docker and Kubernetes in container orcjestration?
+Q.81) How Is load balancing achieved within pods in Kubernetes?
+Q.82) How can I fetch all EC2 instance across all AWS accounts and regions?
+Q.83) How can I fetch all EC2 instances from all accounts within a specific AWS Organisational Unit (OU)?
+Q.84) if two VPCs in different AWS accounts have the same CIDR block, can VPC peering be established between them, and what are the alternatives?
+Q.85) we usually see 2/2 status check on EC2 instances; what does it mean if we now see a 3/3 status check?
+Q.86) if an EC2 instance is hosted in the management account and we create an AMI backup, how can we share that AMI with child accounts?
+Q.87) After sharing an AMI with child accounts and launching the instance, it is launching and terminating automatically. What could be the reason for this behavior?
+Q.88) How can we identify if the AMI we shared has an issue that might be causing the instance to launch and terminate automatically?
+Q.89) what are the steps involved in configuring a 3-tier architecture in AWS?
+Q.90) if we are trying to download or save an RDS backup to an S3 bucket but RDS Is not connecting to S3, how can we troubleshoot this issue?
+Q.91) What is Terraform and how does it differ from other IaC tools like Cloud Formation or ARM templates?
+Q.92) what are Terraform providers and how do they work?
+Q.93) Explain the difference between terraform plan and terraform apply.
+Q.94) What is the purpose of the terraform state file?
+Q.95) How do you manage secrets in Terraform?
+Q.96) What are modules in Terraform and how do you use them?
+Q.97) how does remote state work and why is it important?
+Q.98) What are workspaces in Terraform?
+Q.99) how do you handle terraform code in a CI/CD pipeline?
+Q.100) what's the difference between count and for_each?
+Q.101) What is Terraform, and what is its primary purpose?
+Q.102) How does Terraform differ from other IaC tools like CloudFormation or Ansible?
+Q.103) what are the key Terraform commands, and what do they do?
+Q.104) what is a Terraform state file?
+Q.105) What are Terraform providers, and why are they important?
+Q.106) what are Terraform modules?
+Q.107) How does Terraform workspaces, and when should you use them?
+Q.108) How does Terraform handle importing existing infrastructure, and what are the limitations?
+Q.109) What are Terraform provisioners, and when should you use them?
+Q.110) what is drift detection in Terraform, and how can it be addressed?
+Q.111) how would you implement a rolling update using Terraform for an application deployed in multiple instances?
+Q.112) How do you handle resource dependencies in Terraform, and what is the role of implicit and explicit dependencies?
+Q.113) How do you manage complex multi-cloud deployments with terraform?
+Q.114) What are the taint and untainted commands in Terraform? How would you use them in a real-world scenario?
+Q.115) What are zero-downtime deployments, and how can Terraform achieve them?
+Q.116) How do you handle secrets management in Terraform, and what are the best practices?
+Q.117) Explain the concept of remote state locking in Terraform and its importance in team collaboration.
+Q.118) Explain terraform init, terraform plan, terraform apply, terraform validate, terraform output, terraform refresh, terraform input.
+Q.119)How many plugins are installing in your project for Jenkins?
+Q.120) how many components are there inVPC?
+Q.121) how you worked on cloud watch?
+Q122) share your screen and write a Dockerfile and explain how are building Docker images?
+Q123) Can we use Load balancer for a single instance?
+Q.124) How are you using pipeline triggering in Jenkins by using corncobs?
+Q.125) explain your entire CI/CD, where's the blast radius?
+Q.126) Difference between ALB and NLB, when does latency matter more than routing logic?
+Q.127) Terraform taint vs terraform state rm, when would you use either?
+Q.128) How does CoreDNS handle plugin chain resolution?
+Q.129) Choose between EBS, EFS, and Fox for different workloads.
+Q.130) Bash: find all .log files over 500 MB modified in the last 48hr.
+Q.131) DB migration without downtime? Explain rollback contingency.
+Q.132) Roll back a failed Helm release. What's your exact command chain?
+Q.133) Secure vault secrets in GitHub Actions without hardcoding.
+Q.134) Node is Ready, but kubelet logs are silent. What now?
+Q.135) your autoscaler doubled the infrastructure costs. Logs are normal. What do you check?
+Q.136) a prod pod restarts 8 times/hour. Logs look fine. What's your triage plan?
+Q.137) Terraform drift detected. Who gets paged, and what's the fix sequence?
+Q.138) Disaster recovery setup, what does it look like? When was it last tested?
+Q.139) Simulate a DNS outage with the CoreDNS plugin disorder. How?
+Q.140) Dockerfile: Multi-stage image with the Caching and minimised attack surface.
+Q.141) Secure gRPC traffic across K8s namespaces.
+Q.142) S3 bucket deleted by mistake, walk me through infra + IAM prevention.
+Q.143) Helm worked in staging but broke in prod. Explain the failure class.
+Q.144) App returns 200 OK, but functionality is broken, what did you monitor?
+Q.145) How do you onboard juniors without overwhelming them?
+Q.146) what's the worst production day you.'ve faced? What broke you?
+Q.147) Ever shipped under pressure and regretted it?
+Q.148) How do you protect engineering from non-technical deadlines?
+Q.149) what does a "no blame" postmortem look like in your team?
+Q.150) simulated a DNS cache corruption.
+Q.151) Recovered a Terraform state loss.
+Q.152) Diagnosed a 200/OK but broken service.
+Q.153) Debugged CoreDNS plugin chain at midnight.
+Q.154) CI/CD Pipelines: How do you run builds in multiple operating systems in a pipeline?
+Q.155) Secret Management: How do you access Hashicorp Vault or any secret manager located in another AWS region?
+Q.156) Kubernetes Basics: What are ConfigMaps and Secrets in Kubernetes?
+Q.157) 502 Production issue: The pod is running, but logs show a 502 error - how would you debug it?
+Q.158) CreshLoopBackOff Troubleshooting: How do you fix a CreshLoopBackOff issue in a pod?
+Q.159) Missing Services: if a service doesn't appear in kubectl get services, what could be the problem?
+Q.160) Missing Services: is a service doesn't appear in kubectl get services, what could be the problem?
+Q.161) Cluster Monitoring: How do you check node-level resource consumption in Kubernetes?
+Q.162) Container Crashes: What steps would you take if a container crashes immediately after starting?
+Q.163) Explain Infrastructure as Code (IaC)?
+Q.164) Difference between Docker and Kubernetes?
+Q.165) How does CI/CD work?
+Q.166) Explain service-level agreements (SLA), SLOs, and SLIs.
+Q.167) How do you monitor system health?
+Q.168) Difference between horizontal and vertical scaling?
+Q.169) How do you set up high availability (HA)?
+Q.170) Explain rolling deployments vs blue-green deployments?
+Q.171) How do you troubleshoot production outages?
+Q.172) Explain disaster recovery strategies?
+Q.173) How do you expose a Kubernetes application to the outside world?
+-> use an service of type LoadBalancer or configure an Ingress. LoadBalancers provide a direct public IP, while Ingress supports advanced routing, TLS termination, and centralised traffic management.
+Q.174) What causes pods to go into a CreashLoopBackOff state?
+-> Common reasons include incorrect image versions, missing environment variables, failing readiness/liveness probs, or insufficient resource limits. Checking logs with kubectl logs and describing the pod helps pinpoint the issue.
+Q.175) How do you scale an application in kubernetes?
+-> use kubectl scale to manually adjust replicas or define as HorizontalPodAutoscaler (HPA) for CPU/memory-based auto-scaling. This ensures apps can handle traffic spikes without downtime.
+Q.176) what's the difference between a Deployment and a StatefulSet?
+-> Deployments are ideal for stateless workloads where replicas are identical. StatefulStes are used for stateful apps (like databases) requiring stable network IDs, persistent storage, and ordered scaling.
+Q.177) How do you secure sensitive data in Kubernetes?
+-> Store credentials, API keys, and certificates in Secrets rather than ConfigMaps, Mount them as environment variables or volumes, and use encryption at rest with RBAC for strict access control.
+Q.178) What's the best way to monitor Kubernetes workloads?
+-> Integrate Prometheus for metrics collection, Grafana for visualization, and Alertmanager for proactive notifications, This trio gives end-to-end visibility into cluster health and app performance.
+Q.179) How do you perform a rolling update in Kubernetes?
+-> A Deployment supports rolling updates by gradually replacing old pods with maxUnavailable and maxSurge parameters.
+Q.180) What's the purpose of a DaemonSet?
+-> A DaemonSet ensures a copy of a pod runs on all (or selected) nodes in the cluster. It's commonly used for logging agents, monitoring tools, and security daemons.
+Q.181) How do you handle persistent storage in Kubernetes?
+-> Use PersistentVolumes(PV) and PersistentVolumeClaims (PVC) to abstract storage from pods. This allows apps to survive restarts and rescheduling without losing data.
+Q.182) How do you check CPU status, and what is the expected output when you run that command?
+Q.183) How do you check the status of a previously running process in your VM?
+Q.184) what is the use go Docker Swarm?
+Q.185) how do you log in to EKS cluster?
+Q.186) How do you configure monitoring for your cluster?
+Q.187) How do you patch your host without causing downtime?
+Q.188) How do you change the instance type of your EKS cluster?
+Q.189) Which protocol does Ansible work on?
+Q.190) What is an Ansible playbook?
+Q.191) What are your roles and responsibilities as a DevOps Engineer?
+Q.192) What is the difference between a Deployment and a Statefulset in Kubernetes?
+Q.193) when should you use a StatefulSet instead of a Deployment?
+Q.194) Can you attach a volume to a Deployment? If yes, how is it different from a StatefulSet?
+Q.195) What could cause a StatefulSet pod to fail when rescheduled to a different availability zone?
+Q.196) How do PV/PVC behave across zones in EKS or Kubernetes in general?
+Q.197) what is a Daemonset and when would you use it?
+Q.198) What is a pod Disruption Budget (PDB) and how is it useful?
+Q.199) How do you handle certificate rotation in on-perm kubernetes clusters?
+Q.200) What are the challenges with scheduling pods in a multi-node, multi-AZ setup?
+Q.201) How does the kubernetes scheduler decide where to place pods?
+Q.202) What happens when a StatefulSet pod cannot mount its volume after moving to another node?
+Q.203) What are common challenges faced while working with Terraform?
+Q.204) How do you handle state file management in Terraform?
+Q.205) How do you detect and resolve drift in Terraform-managed infrastructure?
+Q.206) How do you manage secrets securely in Terraform?
+Q.207) why should you use a remote backend for Terraform?
+Q.208) What are all the possible ways to deploy an Nguni server on AWS?
+Q.209) What are the pre-requisites for VPC peering between two VPCs?
+Q.210) What problems occur when two VPCs have overlapping CIDR blocks?
+Q.211) How can you enable communication between overlapping CIDR VPCs?
+Q.212) What is a Transit Gateway and how does it help in VPC communication?
+Q.213) How can a jump server be used in overlapping network scenarios?
+Q.214) Can you explain transitive routing between VPCs A, B, and C?
+Q.215) What CI/CD tools have you used in your current role?
+Q.216) How are you integrating tools like SonarQube, Docker, and Trivy in your pipelines?
+Q.217) How do you trigger a GitHub Actions workflow in another, repository?
+Q.218) What is the purpose of repository_dispatcg in GitHub Actions?
+Q.219)nHow would you trigger a CI/CD pipeline in Repo A from changes in Repo B?   
+Q.220) Can you explain Lambda?
+Q.221) What is auto scaling groups?
+Q.222) What are the different storage classes in S3?
+Q.223) How does S3 ensure data durability?
+Q.224) Difference between IAM role and user?
+Q.225) What is VPC and what are the components of VPC?
+Q.226) Difference between Public and Private Subnet?
+Q.227) How would you design a highly available web-app in AWS?
+Q.228) You need to migrate a large on permises database to AWS. What should you do?
+Q.229) EC2 instances cannot connect to the internet. What could be the reason?
+Q.230) Explain Horizontal and Vertical Scaling.
+Q.231) How do you secure data at-rest and in-transit in AWS?
+Q.232) can you explain about cloud formation?
+Q.233) can you implement MFA in AWS?
+Q.234) How does S# Encryption work?
+Q.235) Explain VPC - Peering?
+Q.236) Can you explain the logic volume manager (LVM) in linux?
+Q.237) Explain Grep command in Linux?
+Q.238) Explain Network Commands in Linux?
+Q.239) How do you manage system service in Linux?
+Q.240) Explain Disk Usage in Linux?
+Q.241) in AWS, if the storage is full, how will you extend the storage?
+Q.242) in the AWS WC2 instance, I need to increase the size 8GB to 16 GB, how would you do that?
+Q.243) Explain Etcd in Kubernetes?
+Q.244) Explain Replica set in Kubernetes?
+Q.245) How does kubernetes handle networking?
+Q.246) How do you monitor kubernetes Cluster?
+Q.247) What is Daemon set in Kubernetes?
+Q.248) Difference between daemon set and statefulset?
+Q.249) How do you troubleshoot pod in Kubernetes?
+Q.250) What is the difference between terraform import and terraform taint?
+Q.251) How do you manage secrets in Terraform without hardcoding them?
+Q.252) What's the difference between count and for_each? Give a real-world use case.
+Q.253) How do you handle drift detection in Terraform?
+Q.254) What is a Terraform remote backend, and why is it important?
+Q.255) How do you manage multiple environments (dev, staging, prod) in Terraform?
+Q.256) Difference between local-exec and remote-exec provisioners.
+Q.257) How do you safely roll back infrastructure changes after a failed deployment?
+Q.258) Explain terraform refresh vs terraform plan.
+Q.259) How do you write reusable Terraform modules?
+Q.260) what is Amazon VPC?
+Q.261) What is the difference between a default VPC and a custom VPC?
+Q.262) What is the maximum number of VPCs per AWS region?
+Q.263) What is a subnet in VPC?
+Q.264) What is the difference between a public subnet and a private subnet?
+Q.265) What is a route table in VPC?
+Q.266) What is an internet Gateway (IGW)?
+Q.267) What is a NAT Gateway and how is it different from a NAT Instance?
+Q.268) What Is the difference between Security Groups and NACLs?
+Q.269) What is a VPC Endpoint and what ate its types?
+Q.270) What is the difference between a Gateway Endpoint and an Interface Endpoint?
+Q.271) What is VPC Peering?
+Q.272) What is AWS Transit Gateway and how is it different from VPC Peering?
+Q.273) What is an Elastic IP (EIP) in VPC?
+Q.274) What are flow Logs in VPC and why are they used?
+Q.275) What is the difference between IPv4 CIDR and IPv6 CIDR in VPC?
+Q.276) What is the maximum number of IP addresses in VPC subnet?
+Q.277) What are the default components created when you launch a new VPC?
+Q.278) how do you find the 5 largest files in a directory (e.g., /var/log)?
+-> find /var/log -type f -exec du -h {}+ | sort -rh | head -n 5
+Q.279) How to check which process is using the most memory or CPU?
+-> ps aux --sort=-%mem | head
+Q.280) How do you monitor live logs of a running application?
+-> tail -f /var/log/syslog
+Q.281) how do you check which ports are open and which process is using them?
+-> sudo netstat -tlnup
+Q.282) How do you find all files modified in the last 24 hours?
+-> find /home -type f -mtime -1
+Q.283) How do you check disk usage of all directories under /var?
+-> du -h --max-depth=1 /var
+Q.284) How do you extract specific columns from a file (e.g., access.log)?
+-> awk '{print $1, $9}' access.log
+Q.285) How do you replace a word in a file without opening it?
+-> sed -I 's/oldword/newword/g' file.txt
+Q.286) How do you find the number of times the word "error" appears in a log file?
+-> grep -o "error" /var/log/syslog | wc -l
+Q.287) How do you check which services are running or failed on a system?
+-> systemctl list-units --type=service --state=running
+Q.288) Explain your Day to Day activities?
+Q.289) Do you have hands-on in Linux? Ig yes, which platform?
+Q.290) What is the latest version of ubuntu?
+Q.291) I have index.html on GitHub, I need to push it into was. The requirement is one load balancer is required and we provide index.html inn GitHub repo and we provide username and token. How to achieve this?
+Q.292) what is dependincies resources for the IP?
+Q.293) What is the command to connect EC2 instance?
+Q.294) How to implement internet gateway?
+Q.295) How to configure internet gateway to route table?
+Q.296) what is the exact command to log in the instance and what kind of authentication will you use? Do you need password to provide or something else?
+Q.297) what is the exact command to log in the instance and what kind of authentication will you use? Do you need password to provide or something else?
+Q.298) in which path will you create index.html in server?
+Q.299) Explain most common linux commands?
+Q.300) How to check one running process?
+Q.301) How to list running process?
+Q.302) you need to find one particular process id and how to kill that? Is it possible in single command?
+Q.303) How to check disk usage?
+Q.304) How to find free memory?
+Q.305) How do you achieve and compress directory in Linux?
+Q.306) Chmod 755 means?
+Q.307) if I provide chmod 755 means, what exactly will happen?
+Q.308) what is chown?
+Q.309) How to list all ssh users in Linux?
+Q.310) if one apache server is running, I need to check logs? Where do I check? In which directory?
+Q.311) what kind of logs can see in /var/log?
+Q.312) purpose of Grep command?
+Q.313) I need to grep keyword: linux. Expect the keyword linux, I need to list out all the lines from the linux.txt file. Which flag will you used with grep?
+Q.314) Difference between "cron" and "at" ?
+Q.315) How to schedule activity in Linux and you need to run a script every 5 minutes?
+Q.316) Explain Git Pull and Git Fetch?
+Q.317) How do you resolve merge conflict?
+Q.318) How to create custom image in Docker?
+Q.319) Elaborate Docker file.
+Q.320) what is the prerequisites of "docker build" command?
+Q.321) How do copy file from the container to host?
+Q.322) what if we put "COPY." ? what will happen in background? What is the source and destination here?
+Q.323) what is Route 53?
+Q.324) is it possible to purchase a domain in route 53?
+Q.325) what is the configuration file of prometheus?
+Q.326) where can I setup the alerting? In prometheus or Grafana?
+Q.327) I want to configure one alerting disk usage of one of the server reaches 80%, it should alert sms? Where can I do these configuration?
+Q.328) How to generate token in GitHub? Explain.
+Q.329) What is a VPC?
+Q.330) What is a Subnet?
+Q.331) What is an Internet Gateway?
+Q.332) What is a NAT Gateway?
+Q.333) What are Route Tables?
+Q.334) What is a Security Group?
+Q.335) What is a Network ACL (NACL)?
+Q.336) What is an Elastic IP?
+Q.337) What is a VPC Peering Connection?
+Q.338) What is a Load Balancer in AWS?
+Q.339) What is Route 53?
+Q.340) What is AWS Direct Connect?
+Q.341) What is a Transit gateway?
+Q.342) How do you secure network traffic in the cloud?
+Q.343) What are VPC Flow Logs?
+Q.344) What is a PrivateLink or VPC Endpoint?
+Q.345) What is CIDR in VPC?
+Q.346) What is the difference between Public and Private Subnets?
+Q.347) What is a Bastion Host?
+Q.348) How do you connect on-premises to AWS Cloud?
+Q.349) What is Elastic Load balancing (ELB)?
+Q.350) What are the different types of load balancers in AWS?
+Q.351) What is an Availability Zone and how does it affect networking?
+Q.352) What is DNS failover in Route 53?
+Q.353) What is an Elastic Network Interface (ENI)?
+Q.354) What is IP addressing in cloud networking?
+Q.355) What is peering vs transit gateway?
+Q.356) What is the difference between NACL and Security Groups?
+Q.357) What is the role of a default VPC?
+Q.358) What is a VPC endpoint and its types?
+Q.359) What is AWS Global Accelerator?
+Q.360) What is the use of CloudFront in networking?
+Q.361) What are ingress and egress traffic?
+Q.362) What is the difference between IGW and NAT Gateway?
+Q.363) What are best practices for securing a VPC?
+Q.364) What is hybrid connectivity in cloud?
+Q.365) How does VPN connection work in AWS?
+Q.366) What is AWS PrivateLink?
+Q.367) How do you troubleshoot VPC connectivity issues?
+Q.368) What is the difference between private IP, public IP, and elastic IP?
+Q.369) What is Linux patching?
+Q.370) Why is patching important in Linux systems?
+Q.371) What are the different types of patches in Linux?
+Q.372) How do you check for available patches or updates in Linux?
+Q.373) What command is used to update all packages in Red Hat or CentOS?
+Q.374) What command is used to update all packages in Ubuntu or Debian?
+Q.375) How do you check the current kernel version before and after patching?
+Q.376) How can you check when the system was last patched?
+Q.377) what is the difference between a security patch and a kernel patch?
+Q.378) How do you apply only security updates on Linux?
+Q.379) What tools can be used for automated patching in Linux>
+Q.380) How can you perform patching using yum or dnf?
+Q.381) How do you exclude certain packages from being updated during patching?
+Q.382) What is yum-cron or dnf-automatic used for?
+Q.383) What is the difference between yum update and yum upgrade?
+Q.384) How do you perform a patch rollback if an update causes issues?
+Q.385) How do you patch multiple servers at once?
+Q.386) What precautions should be taken before applying patches?
+Q.387) What is kernel live patching?
+Q.388) What tools are used for live patching in Linux (e.g., patch, ksplice)?
+Q.389) How do you schedule patching with minimal downtime?
+Q.390) What's the difference between manual patching and automated patching?
+Q.391) How do you verify that patches have been applied successfully?
+Q.392) What logs can you check after patching for any errors?
+Q.393) What's your approach if a server fails to boot after a kernel patch?
+Q.394) How do you test patches before applying them in production?
+Q.395) What is the importance of backups before patching?
+Q.396) How do you notify users or teams about patching activities?
+Q.397) How do you manage patching in large Linux environments?
+Q.398) What's the difference between OS patching and application patching?
+Q.399) What is the difference between security group and NACL?
+Q.400) How to recover an EC2 instance if the key pair is lost?
+Q.401) VPC Peering vs Transit Gateway?
+Q.402) How to troubleshoot an EC2 server?
+Q.403) Can you tell me in how many ways we can connect to a private instance inside a VPC?
+Q.404) What is Kubernetes architecture?
+Q.405) Deployment vs StatefulSet?
+Q.406) Explain your project infrastructure?
+Q.407) Write a Terraform script to create EC2 instance?
+Q.408) What would happen if the state file deleted?
+Q.409) How can you set up VPC, subnet, and route table for a gaming application and leaderboard having a database as well with minimum latency?
+Q.410) What would be the High Availability and DR strategies of it?
+Q.411) How would you manage billing for cloud when there is high traffic load?
+Q.412) What is Kubernetes Architecture?
+Q.413) Difference between Pod, Node, and Cluster?
+Q.414) Horizontal Pod Autoscale vs Vertical Pod Autoscaler?
+Q.415) If Developers say there is a latency issue, how would you reduce the latency to Kubernetes pods?
+Q.416) if node goes down, what would happen to the pod?
+Q.417) What would be your action for it?
+Q.418) What are ConfigMaps and Secrets?
+Q.419) Your pod is stuck in CreshLoopBackoff. How do you debug and fix it?
+Q.420) How do you perform zero-downtine deployments in Kubernetes?
+Q.421) Your service is not accessible externally - where do you start troubleshooting?
+Q.422) Explain how you'd handle a failed rollout during a deployment?
+Q.423) How would you optimise resource requests and limits in a production cluster?
+Q.424) How do you secure secrets in Kubernetes?
+Q.425) A node went down suddenly what happens to the pods running on it?
+Q.426) How do you handle database credentials rotation in Kubernetes?
+Q.427) What's your strategy for backup and restore in a cluster?
+Q. 428) How do you implement auto scaling when traffic fluctuates heavily?
+
+---------------------------------------------------------
+
+Q. 429) what is the command for Kubernetes Roll Back command ?
+-> kubectl rollout undo deployment/nginx-deployment
+-> kubectl rollout history deployment/nginx-deployment (last successfull)
+-> kubectl rollout undo deployment/nginx-deployment--to-revision=2 (roll back to specific version)
+
+---------------------------------------------------------
+
+Q. 430) What is the folder structure of Ansibe role?
+-> Roles can be reused across different playbook and projects. When you create a role using the command ansible-galaxy init <role_name>, it generates a directory structure that looks like below:
+
+1) defaults/ -> contains the default variables for the role. These variables have the lowest priority in the variable precedence hierarchy.
+
+2) files/ -> file.txt: a static text file that can be copied to the target system. Example content:
+This is a static file used for demonstration.
+Script.sh: A shell script to be executed on the target system
+
+3) handlers/ -> contains handlers, which are tasks triggered by the notify directive. 
+
+-------------------------------------------------------------------------------------
+
+Q. 431) what are the components of Docker?
+-> Docker image, docker File, docker hub, docker registry, docker engine.
+- The Client sends Docker commands (docker build, docker run, etc.)
+- The Daemon receives these commands and performs container operations.
+- The REST API is the interface enabling this communication.
+- Tasks include create, start, stop, and delete containers.
+
+--------------------------------------------------------------------------------------
+
+
