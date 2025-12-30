@@ -1574,4 +1574,22 @@ Q. 431) what are the components of Docker?
 
 --------------------------------------------------------------------------------------
 
-
+Q. 432) What is an AWS Region?
+Q. 433) Why does AWS provide multiple Regions?
+Q. 434) How many AWS Regions are Available today?
+Q. 435) Name any 5 AWS Regions?
+Q. 436) Which region is closest to your location?
+Q. 437) Why is Region selection important?
+Q. 438) Do all AWS services exist in every Region?
+Q. 439) What is the naming format of AWS Regions?
+Q. 440) Difference between Region and Availability Zone?
+Q. 441) What factors should you consider when selecting Region?
+Q. 442) What is latency and how do Regions affect it?
+Q. 443) what is data sovereighty?
+Q. 444) What is data residency?
+Q. 445) why is us-east-1 (N. Virginia) heavily used?
+Q. 446) why is Mumbai (ap-south-1) popular in india?
+Q. 447) What is the default Region in AWS management COnsole?
+Q. 448) how do you change the default Region?
+Q. 449) Can a Region go down?
+Q. 450) What happens if an entire Region fails?
