@@ -1598,3 +1598,39 @@ Q. 452) How to upgrade kubernetes clusters without downtime?
 -> use rolling updates via Deployment strategies + multiple node pools (drain/cordon old nodes first)
 ------------------------------------------------------------------------------------
 
+Q. 453) What packages install while we pass kubeadm init command in kubernetes?
+-> A container images are pulled, By default, kubeadm pulls these images from registry.k8s.io:
+kube-apiserver
+kube-controller-manager
+kube-scheduler
+kube-proxy
+etcd
+pause
+coredns
+
+-------------------------------------------------------------------------------------
+
+Q. 454) if kubernetes node not ready state then how to troubleshoot and which service need to check inside the node?
+-> when a kubernetes node is in NotReady state, it usually means the kubelet cannot properly communicate with the control plane or the container runtime / CNI is broken.
+Below is a practical, DevOps-ready troubleshooting flow
+1) First check node condition (from control plane)
+-> kubectl get nodes
+   kubectl describe node <node-name>
+2) Most important service to check on the node. (kubelet service)
+-> systemctl status kubelet
+3) check container runtime (very common cause, depending on runtime)
+-> systemctl status containerd
+-> systemctl status docker
+4) Check CNI (Networking), if CNI is not installed or broken
+-> ls /etc/cni/net.d/
+5) Check CNI pods
+-> kubectl get pods -n kube-system
+6) Check node resources (Pressure conditions)
+-> kubectl describe node <node-name>
+7) also verify disk
+-> df -h
+8) Restart sequence (safe order)
+-> systemctl restart containerd
+-> systemctl restart kubelet
+
+---------------------------------------------------------------------
