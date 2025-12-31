@@ -1593,3 +1593,8 @@ Q. 447) What is the default Region in AWS management COnsole?
 Q. 448) how do you change the default Region?
 Q. 449) Can a Region go down?
 Q. 450) What happens if an entire Region fails?
+Q. 451) Zero Downtime K8s Upgrades?
+Q. 452) How to upgrade kubernetes clusters without downtime?
+-> use rolling updates via Deployment strategies + multiple node pools (drain/cordon old nodes first)
+------------------------------------------------------------------------------------
+
