@@ -1634,3 +1634,56 @@ Below is a practical, DevOps-ready troubleshooting flow
 -> systemctl restart kubelet
 
 ---------------------------------------------------------------------
+
+Q. 455) 1.What is Linux-
+Linux is an open-source operating system based on Unix.We use it for servers, cloud, DevOps, and embedded systems.It is stable, secure, and highly customizable. 
+
+----------------------------------------------------------------------
+
+Q. 456)  What is the Linux kernel?
+The kernel is the core of Linux
+It manages CPU, memory, processes, devices, and system calls.Applications interact with hardware through the kernel.
+
+------------------------------------------------------------------------------
+
+Q. 457) What is the difference between Linux and Unix?
+Unix is proprietary, while Linux is open-source.Linux is free and widely used in servers and cloud.Unix is mainly used in enterprise systems 
+
+------------------------------------------------------------------------------
+
+ Q. 458) What is a shell?
+The shell is a command-line interface between user and OS.We use it to run commands and scripts Common shells are bash, sh, and zsh. 
+
+-----------------------------------------------------------------------------
+
+Q. 459) What is a process?
+A process is a running instance of a program.Each process has a unique PID.We manage processes using ps, top, and kill.
+
+----------------------------------------------------------------------------
+
+Q. 460) What is the difference between soft link and hard link?
+A hard link points to the same inode as the file.A soft link is like a shortcut to the file pathSoft links break if the original file is deleted 
+
+------------------------------------------------------------------------------
+
+Q. 461)  What are file permissions in Linux?
+Linux uses read (0), write (w), and execute(x)permissions.Permissions apply to owner, group, and others.
+We manage them using the chmod command. 
+
+-------------------------------------------------------------------------------
+
+Q.462) Why is execute permission needed on a directory?
+Execute permission allows us to access the directory.Without it, we cannot enter or list files inside Read permission alone is not enough.
+
+--------------------------------------------------------------------------
+
+Q. 463) What is /etc/passwd?
+It stores user account information.
+It includes username, UID, GlD, and home directory.Passwords are not stored here directly. 
+
+----------------------------------------------------------------------------
+
+Q. 464) How do you check disk usage?
+We use df -h to check filesystem usage
+du -sh helps check directory size
+This is useful when servers run out of space.
