@@ -1683,7 +1683,19 @@ It includes username, UID, GlD, and home directory.Passwords are not stored here
 
 ----------------------------------------------------------------------------
 
-Q. 464) How do you check disk usage?
+Q. 464) Difference between Jenkins vs GitHub Actions - choosing the right CI/CD Tool?
+-> The biggest difference: jenkins is a highly customizable, self-hosted automation server, while GitHub Actions i s a fully managed, GitHub-native CI/CD solution.
+Here'a a quick breakdown
+- Jenkins -> Self-hosted and highly flexible Massice plugin ecosystem Full control over infrastructure and pipelines Requires setup, maintenence, and upgrades best of complex, enterprise-level workflows.
+
+- GitHub Actions -> Fully managed and cloud-native Deeply integrated with GitHub repositories Simple YAML-based workflows Minimal maintenance effort ideal for fast-moving teams and GitHub-first projects
+
+Key Takeaway:
+Use Jenkins when you need deep customization and infrastructure control. Choose GitHub Actions when simplicity, speed, and GitHub integration matter most.
+
+-------------------------------------------------------------------------------
+
+Q. 465) How do you check disk usage?
 We use df -h to check filesystem usage
 du -sh helps check directory size
 This is useful when servers run out of space.
