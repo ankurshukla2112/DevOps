@@ -1591,11 +1591,39 @@ Q. 445) why is us-east-1 (N. Virginia) heavily used?
 Q. 446) why is Mumbai (ap-south-1) popular in india?
 Q. 447) What is the default Region in AWS management COnsole?
 Q. 448) how do you change the default Region?
-Q. 449) Can a Region go down?
-Q. 450) What happens if an entire Region fails?
+
+--------------------------------------------------------------------------
+
+Q. 449) Can a Region go down in aws?
+-> yes, an entire AWS Region can go down, but it is very rare. AWS designs Regions to be highly isolated, yet large-scale outages have happened.
+- why Region Can Go Down
+- A Region may become unavailable due to:
+. Power or networking failures
+. Software bugs in core AWS services
+. Human error
+. Natural disasters
+. cascading failures across AZs.
+---------------------------------------------------------------------------
+
+Q. 450) What happens if an entire Region fails in AWS?
+-> if an entire AWS Regios fails, all reagional services go down, Recovery depends on pre-configured multi-region DR using Route 53, cross-region replication, and standby or active-active architectures.
+- DevOps Best Practice Checklist
+. Multi-AZ in NOT enough
+. Always plan multi-region Disaster Recovery for critical apps
+. Define RTO & RPO
+. Test DR using failover drills
+. Keep IaC ready for fast recovery
+
+-----------------------------------------------------------------------------
+
 Q. 451) Zero Downtime K8s Upgrades?
+-> Zero-downtime kubernetes upgrades are achieved using deployments, readiness probes, PodDisruptionBudgets, graceful shutdowns, and node-by-node upgrades with proper load balancing.
+
+--------------------------------------------------------------------------------
+
 Q. 452) How to upgrade kubernetes clusters without downtime?
 -> use rolling updates via Deployment strategies + multiple node pools (drain/cordon old nodes first)
+
 ------------------------------------------------------------------------------------
 
 Q. 453) What packages install while we pass kubeadm init command in kubernetes?
