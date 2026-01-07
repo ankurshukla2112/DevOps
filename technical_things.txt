@@ -1699,3 +1699,41 @@ Q. 465) How do you check disk usage?
 We use df -h to check filesystem usage
 du -sh helps check directory size
 This is useful when servers run out of space.
+
+-----------------------------------------------------------------------------------
+
+Q. 466) How to reverse a list in python?
+-> 1) my_list = [1,2,3,4,5]
+      my_list.reverse()
+      print(my_list)
+
+     o/p -> [5,4,3,2,1]
+ 
+   2) my_list = [1,2,3,4,5]
+      reverse_list = mylist[::-1]
+      print(reverse_list)
+
+    o/p -> [5,4,3,2,1]
+
+------------------------------------------------------------------------------------
+
+Q. 467) write a sample code for remote state management in terraform?
+-> terraform {
+  backend "s3" {
+    bucket         = "my-terraform-state-bucket"
+    key            = "path/to/myproject.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock-table"
+    encrypt        = true
+  }
+}
+
+-------------------------------------------------------------------------------------
+
+Q. 468) from the using list [1,2,3,4,5] i want to get the output only [5,3,1] in python, how i can achieve?
+-> my_list = [1,2,3,4,5]
+   result = mylist[::-1][::-2]
+   print(result)
+
+--------------------------------------------------------------------------------
+
