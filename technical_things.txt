@@ -1765,3 +1765,59 @@ Q. 468) from the using list [1,2,3,4,5] i want to get the output only [5,3,1] in
 
 --------------------------------------------------------------------------------
 
+Q. 469) Deployment Strategies Every DevOps Engineer should know?
+-> 1) Recreate ->
+    - stop old version -> deploy new one
+    - Downtime involved
+    - Best for: Dev/Test, non-critical apps
+
+   2) rolling update -> 
+    - Gradual replacement of instances/pods
+    - No Downtime
+    - Best for: Kubernetes, stateless apps
+
+   3) Blue-Green ->
+    - Two identical environments (Blue = live, Green = new)
+    - Instant traffic switch & rollback
+    - Best for: critical production systems
+
+   4) Canary ->
+    - New version released to a small % of users first
+    - safest rollout with real user validation
+    - Best for: High-traffic apps with strong monitoring
+
+---------------------------------------------------------------
+
+Q. 470) How do you secure data at rest and in transit in AWs?
+Q. 471) Explain the difference between AWS S3 Standard and S3 Glacier?
+Q. 472) How does AWS S# versioning work?
+Q. 473) What is AWS Elasticache?
+Q. 474) Explain the concept of a bastion host?
+Q. 475) How do you implement high availability in AWS?
+Q. 476) What is AWS Direct Connect?
+Q. 477) What are AWS Managed Services?
+Q. 478) What is AWS Config?
+Q. 479) How do you set up cross-region replication in S3?
+Q. 480) Explain AWS KMS?
+Q .481) What is Amazon Redshift?
+Q. 482) How does AWS handle data encryption?
+Q .483) What is Amazopn EFS?
+Q. 484) Explain AWS Elastic Transcoder?
+Q. 485) What is AWS CodePipeline?
+Q. 486) How do you implement disaster recovery in AWS?
+Q. 487) What is AWS OpsWorks?
+Q. 488) What is AWS Step Functions?
+Q. 489) Explain the difference between Spot instance and Reserved Instances?
+Q. 490) What is Amazon SWF?
+Q. 491) How do you secure an AWS API Gateway?
+Q. 492) What are placement Groups in AWS?
+Q. 493) What is AWS CodeDeploy?
+Q. 494) How does Amazon Athena work?
+Q. 495) What is AWS showball?
+Q. 496) Explain the concept of AWS CloudHSM?
+Q. 497) What is AWS X-Ray?
+Q. 498) How do you manage secrets in AWS?
+Q. 499) Explain AWS Systems Manager?
+Q. 500) How/do you design, manage, and test backup and disaster recovery strategies for production system?
+Q. 501) What principles and AWS services do you use to design for failure in cloud architectures?
+
