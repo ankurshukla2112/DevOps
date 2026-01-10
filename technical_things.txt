@@ -1820,4 +1820,25 @@ Q. 498) How do you manage secrets in AWS?
 Q. 499) Explain AWS Systems Manager?
 Q. 500) How/do you design, manage, and test backup and disaster recovery strategies for production system?
 Q. 501) What principles and AWS services do you use to design for failure in cloud architectures?
+Q. 502) Explain the Linux file system hierarchy. What is /etc, /var, /home, /usr?
+Q. 503) what is the difference between an absolute and relative path?
+Q. 504) How do you install, remove, or upgrade packages?
+Q. 505) How do you schedule tasks using cron?
+Q. 506) What is the use of /etc/hosts and /etc/resolv.conf file?
+Q. 507) What is the purpose of shebang?
+Q. 508) What are sticky bits, SUID, and SGID?
+Q. 509) what is the difference between locate and find a command?
+Q. 510) What tools are used for network debugging?
+Q. 511) what is the port no. of ssh? can we change it ? if yes, how ?
+Q. 512) A server is swapping heavily How do you identify memory-hungry processes and stabilize the server?
+Q. 513) What is the difference between kill, killall, and pkill?
+Q. 514) what is the main difference between yum and rpm command, as both are used to install packages?
+Q. 515) Your server is not responding on SSH, but it pings. What do you check next?
+Q. 516) A system update caused your kernel to break. How do you boot using an older kernel?
+Q. 517) How you can increase the filesystem?
+Q. 518) A file system is mounted read-only unexpectedly. How do you fix it?
+Q. 519) Explain partitions and file systems. How you can create a filesystem and format a disk?
+Q. 520) what are the different types of raid in linux?
+Q. 521) df -h command is in hung state, what are the possible reason of it and how you will resolve it ?
+
 
