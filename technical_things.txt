@@ -1155,7 +1155,12 @@ Q.59) your pod id unable to access external APIs. What steps would you take to i
 --------------------------------------------------------------------------
 
 Q.60) What's the difference between build and release pipelines in Azure DevOps?
+
+----------------------------------------------------------------------------
+
 Q.61) How do you handle rollback in your deployment pipeline?
+-> 
+----------------------------------------------------------------------------
 Q.62) How do you secure secrets and credentials in your pipeline?
 Q.63) what's the difference between ENTRYPOINT and CMD in Docker?
 Q.64) what's steps do you follow when a container crashes repeatedly?
