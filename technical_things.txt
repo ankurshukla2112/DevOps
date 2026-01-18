@@ -1845,35 +1845,35 @@ Q. 518) A file system is mounted read-only unexpectedly. How do you fix it?
 Q. 519) Explain partitions and file systems. How you can create a filesystem and format a disk?
 Q. 520) what are the different types of raid in linux?
 Q. 521) df -h command is in hung state, what are the possible reason of it and how you will resolve it ?
-How do you fix 'Permission Denied' errors on EC2? 
-How do you verify file ownership and permissions? 
-How do you change directory ownership for Jenkins deployments? 
-How do you identify files recently modified by root user? 
-How do you restore permission of system files accidentally changed? 
-How do you check sudo privileges of a user? 
-How do you give only read-only access to a file? 
-How do you check which user modified a file last? 
-How do you allow non-root user to run Docker commands? 
-How do you prevent unauthorized permission changes? 
-How do you verify if Nginx or Apache is running after deployment? 
-How do you restart a failed service automatically? 
-How do you debug 'address already in use' errors? 
-How do you verify deployed app files on EC2? 
-How do you clear old build artifacts before deployment? 
-How do you validate environment variables for app startup? 
-How do you roll back a failed deployment? 
-How do you test app startup script manually? 
-How do you check if EC2 has correct IAM role access? 
-How do you confirm health of EC2 target behind ALB? 
-How do you check EBS volume attachment and size? 
-How do you identify which mount point is using which EBS? 
-How do you increase EC2 disk size safely? 
-How do you create a snapshot of EBS volume? 
-How do you mount an unmounted EBS volume? 
-How do you troubleshoot 'read-only file system' errors? 
-How do you check free space inside a specific folder? 
-How do you archive old log files automatically? 
-How do you sync data between two EC2 instances? 
-How do you back up EC2 files to S3 bucket?
+Q. 522) How do you fix 'Permission Denied' errors on EC2? 
+Q. 523) How do you verify file ownership and permissions? 
+Q. 524) How do you change directory ownership for Jenkins deployments? 
+Q. 525) How do you identify files recently modified by root user? 
+Q. 526) How do you restore permission of system files accidentally changed? 
+Q. 527) How do you check sudo privileges of a user? 
+Q. 528) How do you give only read-only access to a file? 
+Q. 529) How do you check which user modified a file last? 
+Q. 530) How do you allow non-root user to run Docker commands? 
+Q. 531) How do you prevent unauthorized permission changes? 
+Q. 532) How do you verify if Nginx or Apache is running after deployment? 
+Q. 533) How do you restart a failed service automatically? 
+Q. 534) How do you debug 'address already in use' errors? 
+Q. 535) How do you verify deployed app files on EC2? 
+Q. 536) How do you clear old build artifacts before deployment? 
+Q. 537) How do you validate environment variables for app startup? 
+Q. 538) How do you roll back a failed deployment? 
+Q. 539) How do you test app startup script manually? 
+Q. 540) How do you check if EC2 has correct IAM role access? 
+Q. 541) How do you confirm health of EC2 target behind ALB? 
+Q. 542) How do you check EBS volume attachment and size? 
+Q. 543) How do you identify which mount point is using which EBS? 
+Q. 544) How do you increase EC2 disk size safely? 
+Q. 545) How do you create a snapshot of EBS volume? 
+Q. 546) How do you mount an unmounted EBS volume? 
+Q. 547) How do you troubleshoot 'read-only file system' errors? 
+Q. 548) How do you check free space inside a specific folder? 
+Q. 549) How do you archive old log files automatically? 
+Q. 550) How do you sync data between two EC2 instances? 
+Q. 551) How do you back up EC2 files to S3 bucket?
 
 
