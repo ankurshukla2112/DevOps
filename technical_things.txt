@@ -57,7 +57,6 @@ CMD ["node", "server.js"]
 
 -------------------------------------------
 
-
 Q.3) if we have a file with a name other than Dockerfile, can you run it to create a Docker image? If yes, please mention the command.?
 -> yes, we can absolutely build a Docker image from a file with a name other than Dockerfile.
 We just need to specify the file name using the -f option in the docker build command.
@@ -70,7 +69,7 @@ Example - suppose your docker file is named MyDockerfile instead of the default 
 Q.4) in Docker run, what does -P signify?
 -> in the docker run command, the -p flag tells Docker to publish all exposed ports of the container to random ports on the host machine. When we build a Docker image, the Dockerfile may contain one or more EXPOSE instructions, like: EXPOSE 80, EXPOSE 443
 This declares that the containers listens on ports 80 and 443 internally.
-Docker run -P my image
+Docker run -p my image
 
 --------------------------------------------------------------
 
@@ -155,6 +154,8 @@ Q.7) What is a Deployment in Kubernetes? Write a deployment.yaml for deploying 3
 - The desired number of Pods are always running (self-healing).
 - you can update (rolling updates) or rollback your applications safely.
 - it provides scaling (replicas) and version control for pods.
+- Deployment is stateless set
+
 -> A deployment manages ReplicaSets, and each ReplicaSet manages Pods.
 
 apiVersion: apps/v1
@@ -291,7 +292,7 @@ Q.11) Explain port, targetPort, and nodePort in a Kubernetes service.
 
 - targetPort ->
 - Definition: The port on the pod that the service forwards traffic to.
-- Purpose: Maps Service traffic to the cot=rrect container port inside the pod.
+- Purpose: Maps Service traffic to the correct container port inside the pod.
 - Type: can be a number (port number) or a name (from the container port)
 - Example:
   Ports:
