@@ -845,7 +845,7 @@ livenessProbe:
 Meaning:- After 10 seconds, K8s will check /healthz on port 8080 every 5 seconds. If it fails -> restart the container.
 
 2) Readiness Probe ->
-Purpose: Checks if the container is ready to serve requests. If ir fails, Kubernetes removes the  pod from service Endpoints (traffic won't be sent). The container is not restarted, just marked as unready until it passes.
+Purpose: Checks if the container is ready to serve requests. If it fails, Kubernetes removes the  pod from service Endpoints (traffic won't be sent). The container is not restarted, just marked as unready until it passes.
 
 Readiness Probe:
   topSocket:
@@ -1160,7 +1160,11 @@ Q.60) What's the difference between build and release pipelines in Azure DevOps?
 ----------------------------------------------------------------------------
 
 Q.61) How do you handle rollback in your deployment pipeline?
--> 
+-> 1) we can do tollback maunally using the kubernetes (kubectl rollout undo deploymenmt deployent_name).
+   2) we will follow the deploymemnt strateges like blue-green deployment, canary deployment and rolling update.
+   - Blue-Green -> Switch traffic back to previous successful version if failuer occure.
+   - Canary Deployment -> deploy to small % of user, monitor, then proceed or rollback.
+   - Rolling-Update -> if helth checks fails, pipeline auto-stoped and revert.
 ----------------------------------------------------------------------------
 Q.62) How do you secure secrets and credentials in your pipeline?
 Q.63) what's the difference between ENTRYPOINT and CMD in Docker?
