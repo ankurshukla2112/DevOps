@@ -1880,35 +1880,35 @@ Q. 548) How do you check free space inside a specific folder?
 Q. 549) How do you archive old log files automatically? 
 Q. 550) How do you sync data between two EC2 instances? 
 Q. 551) How do you back up EC2 files to S3 bucket?
-1. Your EC2 instance is running but application is not accessible. How will you troubleshoot?
-2. A sudden spike in traffic caused application downtime. How do you handle it in AWS?
-3. Your EC2 instance CPU is constantly at 100%. What steps will you take?
-4. An Auto Scaling group is not launching new instances. How will you debug?
-5. Users cannot access S3 objects publicly. What could be wrong?
-6. Sensitive data was accidentally made public in S3. What immediate actions will you take?
-7. Your RDS database is slow. How do you troubleshoot?
-8. A Multi-AZ RDS failed over. What happens next?
-9. Application works in one AZ but not in another. How will you debug?
-10. Load balancer is healthy but traffic is not reaching EC2. Why?
-11. How do you implement zero-downtime deployment in AWS?
-12. How do you design blue-green deployment using AWS services?
-13. How do you secure EC2 instances without storing credentials?
-14. How do you provide cross-account access securely?
-15. How do you restrict developers from deleting production resources?
-16. How do you monitor and alert for AWS infrastructure failures?
-17. CloudWatch alarm didn’t trigger. How will you troubleshoot?
-18. AWS bill suddenly increased. How do you investigate?
-19. How do you design disaster recovery for a critical application?
-20. How do you decide between multi-AZ and multi-region?
-21. How do you prevent DDoS attacks in AWS?
-22. How do you detect compromised IAM credentials?
-23. How do you audit user actions across AWS accounts?
-24. How do you encrypt data at rest and in transit in AWS?
-25. How do you secure VPC communication?
-26. How do you expose a private application securely to the internet?
-27. How do you migrate on-prem workloads to AWS?
-28. How do you perform rollback after a failed deployment?
-29. How do you handle region-wide AWS outages?
-30. How do you design AWS architecture for high availability and cost optimization?
+Q. 552) Your EC2 instance is running but application is not accessible. How will you troubleshoot?
+Q. 553) A sudden spike in traffic caused application downtime. How do you handle it in AWS?
+Q. 554) Your EC2 instance CPU is constantly at 100%. What steps will you take?
+Q. 555) An Auto Scaling group is not launching new instances. How will you debug?
+Q. 556) Users cannot access S3 objects publicly. What could be wrong?
+Q. 557) Sensitive data was accidentally made public in S3. What immediate actions will you take?
+Q. 558) Your RDS database is slow. How do you troubleshoot?
+Q. 559) A Multi-AZ RDS failed over. What happens next?
+Q. 560) Application works in one AZ but not in another. How will you debug?
+Q. 561) Load balancer is healthy but traffic is not reaching EC2. Why?
+Q. 562) How do you implement zero-downtime deployment in AWS?
+Q. 563) How do you design blue-green deployment using AWS services?
+Q. 564) How do you secure EC2 instances without storing credentials?
+Q. 565) How do you provide cross-account access securely?
+Q. 566) How do you restrict developers from deleting production resources?
+Q. 567) How do you monitor and alert for AWS infrastructure failures?
+Q. 568) CloudWatch alarm didn’t trigger. How will you troubleshoot?
+Q. 569) AWS bill suddenly increased. How do you investigate?
+Q. 570) How do you design disaster recovery for a critical application?
+Q. 571) How do you decide between multi-AZ and multi-region?
+Q. 572) How do you prevent DDoS attacks in AWS?
+Q. 573) How do you detect compromised IAM credentials?
+Q. 574) How do you audit user actions across AWS accounts?
+Q. 575) How do you encrypt data at rest and in transit in AWS?
+Q. 576) How do you secure VPC communication?
+Q. 577) How do you expose a private application securely to the internet?
+Q. 578) How do you migrate on-prem workloads to AWS?
+Q. 579) How do you perform rollback after a failed deployment?
+Q. 580) How do you handle region-wide AWS outages?
+Q. 581) How do you design AWS architecture for high availability and cost optimization?
 
 
