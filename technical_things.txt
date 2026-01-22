@@ -687,7 +687,7 @@ Q.22) Explain the Kubernetes controllers: Deployment, StatefulSet, ReplicaSet, a
 Deployment, Statefulset, Replicaset, and daemonSet.
 
 1) ReplicaSet ->
-Purpose: Ensures a specified number of identical pods are running at all times, it's the basic building block for maintaining replicas (copies) os a pod, A ReplicaSet automatically creates or deletes pods to maintain the desired count, If one pod dies, the replicaSet replaces it.
+Purpose: Ensures a specified number of identical pods are running at all times, it's the basic building block for maintaining replicas (copies) of a pod, A ReplicaSet automatically creates or deletes pods to maintain the desired count, If one pod dies, the replicaSet replaces it.
 
 Apiversion: apps/v1
 Kind: Replicaset
