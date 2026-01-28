@@ -2065,5 +2065,20 @@ Q. 593) What is the events in GitHub action?
 
 ------------------------------------------------------------------
 
+Q. 594) What is Runners in GitHub Actions?
+-> Runners are the virtual machines or environments where your GitHub Actions workflows execute. GitHub provides runners for various operating systems, such as Ubuntu, Window, and MacOS. You can specify the types of runner to use for each job in the workflow by setting the runs-on option.
 
+------------------------------------------------------------------------------
+
+Q. 595) How to manage Secrets in GitHub Action?
+-> you must never hardcode sensitive values like API keys, passwords, or cloud credentials in your YAML files. GitHub Actions provides Encrypted Secrets for this.
+- How -> You store them in your repository settings (settings > Secrets and variables > Actions).
+- Usage -> You access them in your workflow using the secrets context:
+
+step:
+  - name: Login to Docker Hub
+    uses: docker/login-action@v3
+    with:
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
