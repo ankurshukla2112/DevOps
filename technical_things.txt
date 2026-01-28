@@ -2052,6 +2052,18 @@ Steps ->
 
 ---------------------------------------------------------------
 
+Q. 593) What is the events in GitHub action?
+-> In GitHub Actios, events are the triggers that kick off workflows. These events are specific activities in your repository that lead to the execution of actions.
+
+- Common GiHub Action Event Types ->
+- Push:- Triggered when code is pushed to the repository.
+- Pull Request :- Activated when a pull request is created, opened, or updated.
+- Release:- Occurs when a release is created or updated.
+- Label:- Happens when a label is applied or removed.
+- Issues:- Fired when an issue is opened, edited, or closed.
+- Milestone:- Triggered when a milestone is added or updated.
+
+------------------------------------------------------------------
 
 
 
