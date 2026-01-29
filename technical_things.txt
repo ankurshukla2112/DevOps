@@ -2068,6 +2068,10 @@ Q. 593) What is the events in GitHub action?
 Q. 594) What is Runners in GitHub Actions?
 -> Runners are the virtual machines or environments where your GitHub Actions workflows execute. GitHub provides runners for various operating systems, such as Ubuntu, Window, and MacOS. You can specify the types of runner to use for each job in the workflow by setting the runs-on option.
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
 ------------------------------------------------------------------------------
 
 Q. 595) How to manage Secrets in GitHub Action?
@@ -2082,3 +2086,44 @@ step:
       username: ${{ secrets.DOCKERHUB_USERNAME }}
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+--------------------------------------------------------------------------
+
+Q. 596) What is Self-Hosted Runners?
+-> while GitHub-hosted runners are easy, self-hosted runners are a key system design choice for many companies.
+why?
+- Security & Network Access :- The runner can be placed inside your private network (e.g. your private VPC in AWS). This allows your CI/CD pipeline to securely access private databases, internal artifacts, or kubernetes clusters that are not exposed to the public internet.
+
+- Custom Hardware :- you can use runners with specific hardware, like powerful GPUs for machine learning, or ARM-based CPUs.
+
+- Cost & Performance:- For organizations with very high build volumes, it can be more cost-effective to manage their own fleet of runners.
+
+--------------------------------------------------------------------------
+
+Q. 596) What is Caching Dependencies in GitHub Action?
+-> CI/CD jobs run in clean environments, meaning they have to download dependencies (like node_modules or Maven packages) every single time. This is slow and wasteful. you v=can use actions/cache to store these dependencies and restore them on subsequent runs.
+
+------------------------------------------------------------------------
+
+Q. 597) What is the Matrix Builds in GitHub Action?
+-> To ensure your system is reliable, you might need to test it across multiple platforms, language versions, or configurations. A matrix strategy lets you run the same job multiple times with different parameters.
+
+-----------------------------------------------------------------------
+
+Q. 598) Why use GitHub Actions?
+GitHub Actions offers several advantages over traditional CI/CD tools
+- Semless Integration:- Works natively within GitHub, reducing the need for external CI/CD services.
+- Event-Driven Automation:- Triggers workflows based on repository events like pushes, pull requests, and issues.
+- Parallel Execution :- Run nultiple jobs concurrently to speed up CI/CD pipelines.
+- Customizable Workflows:- Defines workflows in YAML files to suit specific project needs.
+- Supports Multiple Runners :- Works with GitHub-hosted and self-hosted runners for diverse environments.
+- Marketplace for Actions:- Utilize pre-built actions from the GitHub Marketplace to simplify workflow creation.
+
+---------------------------------------------------------
+
+Q. What is the Use Cases of GitHub Actions?
+-> GitHub Actions can be applied in various scenarios.
+- CI/CD Pipelines:- Automate testing, building, and deployment.
+- Automated Code Reviews:- Run static analysis and linting tools.
+- Scheduled Jobs :- Automate routine tasks such as backups.
+- Security Scans:- Detect vulnerabilities using security tools.
+- Notification Triggers :- Send alerts to Slack, email, or Discord.
