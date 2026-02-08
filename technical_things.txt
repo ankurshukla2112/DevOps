@@ -2120,10 +2120,30 @@ GitHub Actions offers several advantages over traditional CI/CD tools
 
 ---------------------------------------------------------
 
-Q. What is the Use Cases of GitHub Actions?
+Q. 599) What is the Use Cases of GitHub Actions?
 -> GitHub Actions can be applied in various scenarios.
 - CI/CD Pipelines:- Automate testing, building, and deployment.
 - Automated Code Reviews:- Run static analysis and linting tools.
 - Scheduled Jobs :- Automate routine tasks such as backups.
 - Security Scans:- Detect vulnerabilities using security tools.
 - Notification Triggers :- Send alerts to Slack, email, or Discord.
+
+-------------------------------------------------------------------------
+
+Q. 560) What will happen if core dns is down?
+-> If CoreDNS is down in Kubernetes, the main impact is DNS resolution failure inside the cluster.
+1) service-to-service communication Breaks -> pods cannot resolve service names, Microservices cannot talk to each other, Applications may throw error like: Name or service not known, Temporary failure in name resolution.
+
+2) New pods may fail to start properly -> if an application depends on: Detabase hostname, External APIs(via DNS), Internal services.
+- The pod may: CrashLoopBackOff, Stay in Running but application fails internally.
+
+3) External Domain Resolution Fails ->
+if your pods call: google.com, payment gateway APIs, S3 endpoints, External SaaA services, All external DNS lookups will fail.
+
+4) Running Connections Continue Working -> 
+Existing open TCP connections will continue working, Only new DNS lookups fail, So impact may appear gradually.
+
+5) Kubernetes Control Plane Usually Still Works ->
+Nodes remain Ready, Pods remain Running, Kubectl still works, Cluster doesn't crash, Because core components don't depend heavily on CoreDNS for internal operations.
+
+-----------------------------------------------------------------------------------------------------------------------------
