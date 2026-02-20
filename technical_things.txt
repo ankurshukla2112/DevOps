@@ -1040,6 +1040,8 @@ Each path introduces different latency characteristics - for example, VPC peerin
 
 Q.35) what are the steps to securely connect on-perm infrastructure to AWS?
 -> 
+
+----------------------------------------------------------------------------
 Q.36) How do you handle IP exhaustion in a VPC and what are your options?
 Q.37) Explain how you would automate patching for EC2 instances across multiple accounts?
 Q.38) How do you enforce compliance and governance in AWS organisations across accounts?
