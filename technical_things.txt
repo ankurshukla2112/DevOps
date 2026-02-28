@@ -2163,4 +2163,28 @@ Q. 570) What is SonarQube? How do you integrate it with Jenkins, and what real-l
 Q. 571) What are the different Routing Policies available in Route 53?
 Q. 572) Explain the request flow from a Load Balancer to an EC2 web server.
 Q. 573) How can you migrate a web server hosted on an EC2 instance to another AWS region?
+-> 
+---------------------------------------------------------------------------------------
+
 Q. 574) How do you handle "Infrastructure Drift" when using Terraform?
+-> Drift happens when the real infrastructure changes outside Terraform (manual change, script, console update, etc) so Terraform state and actual infra become different.
+Infrastructure drift occurs when the actual infrastructure differes from Terraform state file, usually due to:
+- Manual changes in cloud console (AWS /Azure / GCP)
+- Changes by another automation tool
+- Failed Terraform apply
+- State file curruption
+Terraform always compares:
+Terraform state vs Real Infrastructure vs Terraform Code
+- How to Detect Drift in Terraform
+1) Run Terraform plan
+- terraform plan
+this command will compare current state with real infra, if drift exist Terraform will show changes.
+2) use Terraform refresh
+- terraform refresh
+it will update state file from real infra
+3) use terraform plan-refresh-only
+- terraform plan -refresh-only
+this only checks drift without changing infra
+Infrasture drift happens when actual infrastructure differs from Terraform state i detect drift using "terraform plan" or "terraform plan -refresh-only" to fix drift, i either run run "terraform apply", import resources, or update Terraform code. To prevent drift, I use remote backend, state locking, CI/CD pipelines, and restrict manual changes.
+
+-----------------------------------------------------------------------------------
