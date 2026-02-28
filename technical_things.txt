@@ -2149,3 +2149,18 @@ Existing open TCP connections will continue working, Only new DNS lookups fail, 
 Nodes remain Ready, Pods remain Running, Kubectl still works, Cluster doesn't crash, Because core components don't depend heavily on CoreDNS for internal operations.
 
 -----------------------------------------------------------------------------------------------------------------------------
+
+Q. 561) What are the different types of services in Kubernetes?
+Q. 562) There is an EC2 instance in a public subnet; how will you migrate it to a private subnet?
+q. 563) What is Ingress in Kubernetes, and why do we need it?
+Q. 564) Why should we use Kubernetes? What specific challenges does it solve?
+Q. 565) Explain the detailed flow: How does a user request travel from a browser to a Kubernetes cluster?
+Q. 566) What happens internally when you run kubectl apply -f deployment.yaml?
+Q. 567) What is the difference between an API Gateway and Kubernetes Ingress?
+Q. 568) How would you build a highly available and scalable architecture on AWS?
+Q. 569) What is the difference between a NAT Instance and a NAT Gateway?
+Q. 570) What is SonarQube? How do you integrate it with Jenkins, and what real-life issues have you faced during integration?
+Q. 571) What are the different Routing Policies available in Route 53?
+Q. 572) Explain the request flow from a Load Balancer to an EC2 web server.
+Q. 573) How can you migrate a web server hosted on an EC2 instance to another AWS region?
+Q. 574) How do you handle "Infrastructure Drift" when using Terraform?
