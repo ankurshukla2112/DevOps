@@ -2188,3 +2188,7 @@ this only checks drift without changing infra
 Infrasture drift happens when actual infrastructure differs from Terraform state i detect drift using "terraform plan" or "terraform plan -refresh-only" to fix drift, i either run run "terraform apply", import resources, or update Terraform code. To prevent drift, I use remote backend, state locking, CI/CD pipelines, and restrict manual changes.
 
 -----------------------------------------------------------------------------------
+
+Q. 575) awk '{gsub("ms","",$3); sum += $3; count++} END {if (count > 0) print "Average:", sum/count, "ms"; else print "No data"}' /tmp/1880973-linux-calculating-average-response-times-for-distributed-services/db.*.log
+
+-----------------------------------------------------------------------------------------
