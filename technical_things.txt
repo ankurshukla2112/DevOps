@@ -2620,9 +2620,249 @@ In a global application, CloudFront acts as the edge entry point, while AWS Shie
 -----------------------------------------------------------------------------
 
 Q.51) How do you perform zero-downtime upgrades for a state; application hosted on ECS or EKS?
--> 
+-> Performing zero-downtime upgrades for a stateful applications on Amazon Elastic Container Service (ECS) or 
+Amazon Elastic Kubernetes Service (EKS) requires careful handling of deployment strategy,
+traffic routing, and persistent storage so that existing connections and state are preserved.
+
+1. Use Rolling Deployments
+
+The most common approach is rolling updates.
+
+Process:
+
+Deploy new container version
+
+Start new tasks/pods
+
+Gradually stop old ones
+
+Maintain minimum healthy capacity
+
+In ECS this is configured via deployment configuration:
+
+Example:
+
+Minimum healthy percent: 100
+Maximum percent: 200
+
+This ensures new tasks start before old ones stop, preventing downtime.
+
+2. Use Load Balancer Health Checks
+
+Use Elastic Load Balancing (usually ALB) to route traffic only to healthy containers.
+
+Upgrade flow:
+
+User → ALB → New healthy containers
+
+Old containers are removed from the load balancer only after new ones pass health checks.
+
+3. Graceful Shutdown for Stateful Apps
+
+For stateful applications:
+
+Enable connection draining
+
+Allow running requests to complete
+
+Save state before termination
+
+Example for Kubernetes:
+
+terminationGracePeriodSeconds: 60
+
+This allows the container to finish processing before shutdown.
+
+4. Persistent Storage for State
+
+Stateful workloads must use persistent storage like:
+
+Amazon Elastic Block Store
+
+Amazon Elastic File System
+
+This ensures application state is not lost when pods/tasks restart.
+
+5. Use Readiness and Liveness Probes (EKS)
+
+In Kubernetes, configure probes:
+
+Readiness probe → ensures pod receives traffic only when ready
+
+Liveness probe → restarts unhealthy pods
+
+Example:
+
+readinessProbe:
+  httpGet:
+    path: /health
+6. Use Blue-Green Deployment (Safer Approach)
+
+For critical upgrades, use blue-green deployments.
+
+Process:
+
+Blue (current version) → serving traffic
+Green (new version) → deployed separately
+Switch traffic after validation
+
+In ECS this can be implemented using:
+
+AWS CodeDeploy
+
+Benefits:
+
+Instant rollback
+
+No production impact during testing.
+
+7. Handle Database Schema Changes
+
+For stateful systems with database changes:
+
+Best practice:
+
+Apply backward-compatible schema
+
+Deploy new application version
+
+Remove old schema later
+
+This prevents application breakage.
+
+8. Auto Scaling Safety
+
+Maintain capacity during deployment using:
+
+Amazon EC2 Auto Scaling
+
+Kubernetes Horizontal Pod Autoscaler
+
+This ensures enough instances during rollout.
+
+✅ Short Interview Answer (3–4 lines)
+For zero-downtime upgrades on ECS or EKS, I use rolling deployments behind an ALB so new containers become healthy before old ones terminate. Stateful 
+data is stored in persistent storage like EBS or EFS, and readiness probes ensure traffic only 
+reaches healthy pods. For critical releases, I implement blue-green deployments using CodeDeploy, which allows safe testing and instant rollback.
+
+-------------------------------------------------------------------------------------
+
 Q.52) How can you ensure S3 data protection against accidental deletion and overwrites?
+-> To protect data in Amazon S3 from accidental deletion or overwrites, AWS provides multiple
+mechanisms that help ensure data durability, recovery, and compliance.
+
+1. Enable S3 Versioning
+
+The most important feature is S3 Versioning.
+
+How it works:
+
+Every object update creates a new version
+
+Old versions are retained
+
+Deleted objects can be recovered
+
+Example:
+
+file.txt (v1)
+file.txt (v2)
+file.txt (v3)
+
+If someone deletes the file, you can restore a previous version.
+
+2. Enable S3 Object Lock
+
+Use Amazon S3 Object Lock to prevent objects from being deleted or modified.
+
+Modes available:
+
+Governance Mode
+
+Only privileged users can override deletion
+
+Compliance Mode
+
+No user (even root) can delete objects before retention expires
+
+Useful for:
+
+Compliance
+
+Audit requirements
+
+3. Enable MFA Delete
+
+Use MFA Delete with S3 versioning.
+
+This requires multi-factor authentication to:
+
+Delete object versions
+
+Disable versioning
+
+This prevents accidental or unauthorized deletions.
+
+4. Use Bucket Policies and IAM Controls
+
+Use strict policies via AWS Identity and Access Management.
+
+Examples:
+
+Deny s3:DeleteObject
+
+Allow only specific roles to delete objects
+
+Restrict access using conditions
+
+Example policy logic:
+
+Deny deletion unless user is admin role
+5. Cross-Region Replication
+
+Enable Amazon S3 Cross-Region Replication.
+
+Benefits:
+
+Replicates objects to another AWS region
+
+Protects against regional failures
+
+Creates backup copies
+
+6. Use Lifecycle Policies
+
+Use S3 lifecycle rules to move older versions to cheaper storage.
+
+Example:
+
+Move old versions to Amazon S3 Glacier
+
+This keeps recovery copies while reducing cost.
+
+7. Enable Monitoring and Alerts
+
+Track deletion events using:
+
+AWS CloudTrail
+
+Amazon CloudWatch
+
+You can alert when:
+
+Object deletion occurs
+
+Versioning is disabled
+
+✅ Short Interview Answer (3–4 lines)
+To protect S3 data from accidental deletion or overwrites, I enable S3 versioning so previous object versions can be restored. I also use S3 Object 
+Lock and MFA Delete for stronger protection and implement strict IAM policies to restrict deletion permissions. For additional resilience, I configure 
+cross-region replication and monitoring using CloudTrail and CloudWatch.
+
+----------------------------------------------------------------------------------------------
+
 Q.53) What's your approach to cost optimisation in an environment with EC2, RDS, and Lambda?
+-> 
 Q.54) How do you use AWS Config and CloudTrail for post-incident investigations and audit trails?
 Q.55) A pod keeps restarting with CrashLoopBackOff. How would you troubleshoot this issue?
 -> - Run kubectl describe pod to review events and diagnose the issue.
