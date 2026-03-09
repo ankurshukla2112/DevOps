@@ -5789,3 +5789,72 @@ Infrasture drift happens when actual infrastructure differs from Terraform state
 Q. 575) awk '{gsub("ms","",$3); sum += $3; count++} END {if (count > 0) print "Average:", sum/count, "ms"; else print "No data"}' /tmp/1880973-linux-calculating-average-response-times-for-distributed-services/db.*.log
 
 -----------------------------------------------------------------------------------------
+
+Q. 576) what is the meaning of free -m and free -h command in linux?
+-> 1) free -m -> free - m means display memory in mega bites format
+   2) free -h -> free -h means display memory in human readable format, it's automatically displays memory in KB, MB, or GB, which is easier to read.
+
+----------------------------------------------------------------------------------------------
+
+Q. 577) when i am new in linx, how i comes to know file and directory in linux?
+-> when we are new in linux we can use some command in linux to identify file or directory
+-> using ls -l
+output -> 
+drwxr-xr-x 2 user user 4096 Mar  9 10:20 documents
+-rw-r--r-- 1 user user 1200 Mar  9 10:15 file.txt
+
+First character
+d - Directory
+- - Regular file
+| 0- Symbolic link
+
+----------------------------------------------------------
+
+Q. 578) ping command work under which protocol?
+-> The ping command works using the Internet Control Message Protocol (ICMP).
+
+----------------------------------------------------------
+
+Q. 579) how to build docker file using different name?
+-> if you want to build a Docker image using a Docker file with different name, you can use -f option in the 
+docker build command
+
+-> docker build -f <dockerfile> -t <image-name>:<tag> .
+
+----------------------------------------------------------------
+
+Q. 580) what is the best practice to create a docker image using docker file to run or avoid as a root user
+and channe the user with permission in docker file?
+-> The best practice is to avoid running containers as root by creating a dedicated user inside the 
+Dockerfile using userass and switching to it with the USER instruction. Also assign proper file ownership
+using chown or COPY --chown to ensure the application runs with least privilege.
+
+- Exampkle Dockerfile (Best Practice) ->
+
+FROM ubuntu:22.04
+
+# Create group and user
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+
+# Create application directory
+WORKDIR /app
+
+# Copy application files
+COPY . /app
+
+# Change ownership of files
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Run application
+CMD ["./start.sh"]
+
+--------------------------------------------------------------------
+
+Q. 581) what is the latest version of docker and kubernetes?
+-> Docker version 29.0.0, kubernetes Latest stable version: 1.35.2 
+
+-------------------------------------------------------------------
+
