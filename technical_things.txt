@@ -5858,3 +5858,46 @@ Q. 581) what is the latest version of docker and kubernetes?
 
 -------------------------------------------------------------------
 
+Q. 582) if we don't mention anything by default which port will be used for docker container?
+-> Docker does not autoamatic chose a port, So the default port comes from the application, not Docker.
+like Nginx → listens on port 80
+Apache HTTP Server → listens on port 80
+Tomcat → listens on port 8080
+
+-------------------------------------------------------------------------------------
+
+Q. 583) how to login inside the container?
+-> docker exec -it <container_name_or_id> /bin/bash
+
+-------------------------------------------------------------------------
+
+Q. 584) what command will you used to destroy a resource in Terraform?
+-> - All the resources -> terraform destroy
+   - specific resource -> terraform destroy -target=<resource_type.resource_name>
+
+---------------------------------------------------------------------------
+
+Q. 585) difference between ingress controller and api gateway?
+Q. 586) what is AWS direct connect?
+Q. 587) what is the role of ingress controller?
+Q. 588) Different modes in ansible?
+-> 
+---------------------------------------------------------------------------
+
+Q. 589) Ansible lint.
+-> Ansible Lint is a tool used to analyze Ansible playbooks for syntax errors, coding standards, and best practices before executing them.
+
+--------------------------------------------------------------------------
+
+Q. 590) modules in ansible.
+
+--------------------------------------------------------------------------
+
+Q. 591) how to see what containers are there under a k8s pod?
+-> Use kubectl describe pod <pod-name> or kubectl get pod <pod-name> -o yaml to see the containers running inside a Kubernetes Pod.
+
+--------------------------------------------------------------------------
+
+Q. 592) variable precedence in terraform.
+Q. 593) prometheus setup?
+Q. 594) ELK path of the server where prometheus is installed?
