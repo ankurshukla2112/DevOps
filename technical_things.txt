@@ -5901,3 +5901,5 @@ Q. 591) how to see what containers are there under a k8s pod?
 Q. 592) variable precedence in terraform.
 Q. 593) prometheus setup?
 Q. 594) ELK path of the server where prometheus is installed?
+Q. 595) What is the docker layer?
+Q. 596) what is the trust entity in IAM role?
