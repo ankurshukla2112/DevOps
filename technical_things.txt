@@ -5901,5 +5901,22 @@ Q. 591) how to see what containers are there under a k8s pod?
 Q. 592) variable precedence in terraform.
 Q. 593) prometheus setup?
 Q. 594) ELK path of the server where prometheus is installed?
+
+-----------------------------------------------------------------
+
 Q. 595) What is the docker layer?
+-> A Docker layer is a read-only filesystem layer created for each instruction in a Dockerfile. Multiple layers stack together to form a Docker image, 
+and containers add a writable layer on top of these image layers.
+
+--------------------------------------------------------------------
+
 Q. 596) what is the trust entity in IAM role?
+-> A trusted entity in an IAM role is the AWS service, account, or identity that is allowed to assume the role through the role's trust policy.
+
+-------------------------------------------------------------------------
+
+Q. 597) what is the service account in kubernetes, how we can use?
+-> A Service Account in Kubernetes provides an identity for Pods to interact with the Kubernetes API. 
+It is used with RBAC roles and role bindings to control permissions for applications running inside the cluster.
+
+---------------------------------------------------------------------------
