@@ -5920,3 +5920,124 @@ Q. 597) what is the service account in kubernetes, how we can use?
 It is used with RBAC roles and role bindings to control permissions for applications running inside the cluster.
 
 ---------------------------------------------------------------------------
+
+Q. 598) in aws we have two account account1 have ec2 instance and account2 have s3 bucket, how we can connect both services?
+
+-> If you have two AWS accounts:
+
+Account 1 → has EC2 instance
+
+Account 2 → has S3 bucket
+
+You can allow the EC2 instance to access the S3 bucket using Cross-Account IAM Role or Bucket Policy. The best practice is IAM Role with cross-account access.
+
+1️⃣ Method 1: Cross-Account IAM Role (Recommended)
+Step 1: Create IAM Role in Account 2 (S3 account)
+
+Go to IAM → Roles → Create Role
+
+Choose Another AWS Account
+
+Enter Account1 ID
+
+Attach policy for S3 access.
+
+Example policy:
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject","s3:ListBucket"],
+      "Resource": [
+        "arn:aws:s3:::my-bucket-name",
+        "arn:aws:s3:::my-bucket-name/*"
+      ]
+    }
+  ]
+}
+
+Trust relationship:
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::ACCOUNT1-ID:root"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+Step 2: Attach IAM Role to EC2 in Account1
+
+Create a role in Account1 with permission to assume the role in Account2.
+
+Policy:
+
+{
+ "Version": "2012-10-17",
+ "Statement": [
+   {
+     "Effect": "Allow",
+     "Action": "sts:AssumeRole",
+     "Resource": "arn:aws:iam::ACCOUNT2-ID:role/S3AccessRole"
+   }
+ ]
+}
+
+Attach this role to the EC2 instance.
+
+Step 3: Assume Role from EC2
+
+From the EC2 instance:
+
+aws sts assume-role \
+--role-arn arn:aws:iam::ACCOUNT2-ID:role/S3AccessRole \
+--role-session-name testsession
+
+Then use returned credentials to access S3.
+
+2️⃣ Method 2: S3 Bucket Policy (Simpler)
+
+You can directly allow Account1 EC2 IAM role in the S3 bucket policy.
+
+Bucket policy in Account2:
+
+{
+ "Version": "2012-10-17",
+ "Statement": [
+   {
+     "Effect": "Allow",
+     "Principal": {
+       "AWS": "arn:aws:iam::ACCOUNT1-ID:role/EC2Role"
+     },
+     "Action": "s3:*",
+     "Resource": [
+       "arn:aws:s3:::my-bucket-name",
+       "arn:aws:s3:::my-bucket-name/*"
+     ]
+   }
+ ]
+}
+3️⃣ Real DevOps Interview Answer (Short Version)
+
+If this comes in interview, answer like:
+
+“To connect EC2 in Account1 with an S3 bucket in Account2, we configure cross-account access using IAM Role or S3 bucket policy. The recommended approach is creating an IAM role in Account2 with S3 permissions and allowing Account1 to assume that role using STS AssumeRole.”
+
+✅ Tip for DevOps interviews (6+ years)
+Interviewers usually expect you to mention these keywords:
+
+Cross Account Access
+
+IAM Role
+
+STS AssumeRole
+
+Bucket Policy
+
+-----------------------------------------------------------------------------------------------------------
