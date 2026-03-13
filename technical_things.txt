@@ -6047,4 +6047,14 @@ Q. 599) How to change the terraform worksapce using terraform command?
 
 -------------------------------------------------------------------------------------------------
 
-Q. 600) 
+Q. 600) what is the null resource in terraform?
+-> In Terraform, a null resource is a special resource that does not create any actual infrastructure. 
+It is mainly used to run scripts, commands, or trigger actions inside Terraform.
+
+-----------------------------------------------------------------------------------------------
+
+Q. 601) what if our main.tf file is empty and we are going to terraform plan?
+-> If your main.tf file is empty and you run terraform plan in Terraform, Terraform will not plan to create, modify, or destroy anything.
+   If the state file already contains resources, but your main.tf is empty, then Terraform will plan to destroy those resources.
+
+------------------------------------------------------------------------------------------------
