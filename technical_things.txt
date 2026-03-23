@@ -6058,3 +6058,41 @@ Q. 601) what if our main.tf file is empty and we are going to terraform plan?
    If the state file already contains resources, but your main.tf is empty, then Terraform will plan to destroy those resources.
 
 ------------------------------------------------------------------------------------------------
+
+Q. 602) what is error budget in SRE?
+-> In site Reliability Engineering (SRE), Reeor Budget is a very important concept 
+related to Service reliability vd new Feature Release spped.
+
+Error Budget = Allowed amount of failure/downtime for a service in a given time period
+based on SLA/SLO.
+
+it basically tells: how much your system is allowed to fail.
+
+simple example ->
+suppose your service SLO = 99.9% uptime per month
+total time in 30 days:
+
+30 x 24 x 60 = 43,200 minutes
+
+Allowed downtime:
+
+0.1% of 43,200 = 43.2 minutes
+
+so your error budget = 43.2 minutes downtime per month
+if downtime exceeds this -> Engineering team must stop new releases and focus on stability.
+
+Formula of Error Budget = 1 - SLO
+slo = 99.9%
+Error Budget = 0.1%
+
+- Why error budget i important
+. Reliability
+. Innovation / new feature deployment
+. Risk Management
+. Release velocity
+
+Error Budget is the amount of acceptable failure or downtime allowed for a service based 
+on the SLO. it helps balance system reliability and release velocity. if the error budget
+is exhausted, teams should stop new deployments and focus on improving reliability.
+
+----------------------------------------------------------------------------------
