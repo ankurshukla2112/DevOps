@@ -6096,3 +6096,188 @@ on the SLO. it helps balance system reliability and release velocity. if the err
 is exhausted, teams should stop new deployments and focus on improving reliability.
 
 ----------------------------------------------------------------------------------
+Q. 603) how to upgrade prometheus version in kubernetes pod without downtime?
+-> Upgrading Prometheus in Kubernetes without downtime is a common SRE/DevOps task. The key idea is rolling upgrade + persistent storage + multiple replicas.
+
+I’ll explain the practical production approach.
+
+Upgrade Prometheus in Kubernetes Without Downtime
+1. Important Requirements Before Upgrade
+
+To avoid downtime, Prometheus must have:
+
+Persistent Volume (PVC) for data
+At least 2 replicas
+Running as Deployment or StatefulSet
+Service in front of pods
+
+If you have only 1 replica, downtime is unavoidable.
+
+2. Check Current Deployment
+kubectl get deploy -n monitoring
+kubectl get pods -n monitoring
+kubectl describe deploy prometheus -n monitoring
+
+Check image version:
+
+kubectl get deploy prometheus -n monitoring -o yaml | grep image
+3. Upgrade Prometheus Image (Rolling Update)
+
+This is the safest method.
+
+kubectl set image deployment/prometheus \
+prometheus=prom/prometheus:v2.52.0 -n monitoring
+
+Kubernetes will:
+
+Create new pod with new version
+Wait until Ready
+Terminate old pod
+No downtime if replicas > 1
+
+Check rollout:
+
+kubectl rollout status deployment prometheus -n monitoring
+4. Ensure Rolling Update Strategy
+
+Your deployment should have this:
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
+Very Important
+
+maxUnavailable: 0 → No pod will be stopped before new pod is ready
+This ensures zero downtime
+
+Update deployment:
+
+kubectl edit deploy prometheus -n monitoring
+5. If Using Helm (Most Common)
+
+If Prometheus installed via Helm:
+
+Check release:
+
+helm list -n monitoring
+
+Upgrade:
+
+helm repo update
+helm upgrade prometheus prometheus-community/prometheus \
+--namespace monitoring
+
+Or specify version:
+
+helm upgrade prometheus prometheus-community/prometheus \
+--version 25.0.0 \
+-n monitoring
+6. Best Production Method (Recommended)
+
+In production companies, they use:
+
+Method: Blue-Green Prometheus
+Deploy new Prometheus with new version
+Sync same config + PVC
+Switch service to new pods
+Delete old Prometheus
+
+This gives zero monitoring downtime.
+
+7. Summary (Interview Answer)
+
+If interviewer asks:
+
+Answer:
+
+To upgrade Prometheus without downtime in Kubernetes, we run Prometheus with multiple replicas and persistent storage, then perform a rolling update by updating the container image. We ensure the deployment strategy has maxUnavailable set to 0 so new pods become ready before old pods terminate. If installed via Helm, we perform helm upgrade which triggers rolling update automatically.
+
+8. Quick Commands Summary
+# Update image
+kubectl set image deployment/prometheus prometheus=prom/prometheus:v2.52.0 -n monitoring
+
+# Check rollout
+kubectl rollout status deployment prometheus -n monitoring
+
+# Rollback if issue
+kubectl rollout undo deployment prometheus -n monitoring
+
+------------------------------------------------------------------------------------------------
+
+Q. 604) how to create RDS in aws?
+-> To create RDS in AWS, you can use AWS Console, CLI, or Terraform. I’ll explain the easiest and most common method (AWS Console), then CLI example.
+
+Create RDS in AWS (Step-by-Step – Console)
+
+Using the AWS console via Amazon Web Services to create Amazon RDS:
+
+Step 1: Login to AWS
+
+Go to AWS Console → Search RDS → Open RDS Dashboard.
+
+Step 2: Create Database
+
+Click Create database
+
+Choose:
+
+Standard create (recommended)
+Step 3: Select Database Engine
+
+Choose one:
+
+MySQL
+PostgreSQL
+MariaDB
+Oracle
+SQL Server
+Aurora
+
+Example: Select MySQL
+
+Step 4: Choose Template
+Production
+Dev/Test (cheaper)
+Free tier (if eligible)
+Step 5: DB Instance Settings
+
+Fill:
+
+DB instance identifier → mydb
+Master username → admin
+Password → set password
+Instance type → db.t3.micro (free tier)
+Step 6: Storage
+Storage type → GP2 / GP3
+Allocated storage → 20 GB
+Enable autoscaling (optional)
+Step 7: Connectivity
+
+Important settings:
+
+VPC → Default VPC
+Public access → Yes (if connecting from local)
+Security group → Allow port 3306 (MySQL)
+Step 8: Additional Configuration
+Database name → testdb
+Backup retention → 7 days
+Enable monitoring (optional)
+Step 9: Create Database
+
+Click Create database
+
+Creation takes 5–10 minutes.
+
+Connect to RDS
+
+After creation:
+
+Go to RDS → Databases
+Copy Endpoint
+Connect using MySQL client
+mysql -h mydb.xxxxxx.ap-south-1.rds.amazonaws.com -u admin -p
+
+-----------------------------------------------------------------------------------------------
