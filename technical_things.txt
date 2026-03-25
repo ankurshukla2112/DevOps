@@ -6281,3 +6281,73 @@ Connect using MySQL client
 mysql -h mydb.xxxxxx.ap-south-1.rds.amazonaws.com -u admin -p
 
 -----------------------------------------------------------------------------------------------
+
+Q. 605) how to solve below problem using python?
+"<timestamp> <log_level> <service_name> <message>"
+logs = [     "2024-02-11T10:00:00 ERROR auth-service Failed login",    
+             "2024-02-11T10:01:00 INFO payment-service Payment processed",     
+             "2024-02-11T10:02:00 ERROR auth-service Token expired",    
+             "2024-02-11T10:03:00 ERROR payment-service Payment failed",    
+             "2024-02-11T10:04:00 INFO auth-service User logged out" ].
+       
+             Expected output: {     "auth-service": 2,     "payment-service": 1 }
+
+-> from collections import defaultdict
+
+error_count = defaultdict(int)
+
+for log in logs:
+    _, level, service, _ = log.split(" ", 3)
+    if level == "ERROR":
+        error_count[service] += 1
+
+print(dict(error_count))
+
+--------------------------------------------------------------------------------------------
+
+Q. 607) ANSIBLE
+=======
+You are required to install a webserver on 20 EC2 instances ? 
+The version of the webserver varies based on the OS flavor.
+
+* For Ubuntu based VMs, nginx should be installed
+* For CentOS based VMs, apache should be installed
+
+WRITE AN ANSIBLE PLAYBOOK for the above scenario.
+
+-> ---
+- name: Install webserver based on OS
+  hosts: webservers
+  become: yes
+
+  tasks:
+
+    - name: Install nginx on Ubuntu
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install apache on CentOS
+      yum:
+        name: httpd
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Start nginx on Ubuntu
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Start apache on CentOS
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_facts['os_family'] == "RedHat"
+
+-----------------------------------------------------------------------------
+
