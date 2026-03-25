@@ -194,7 +194,7 @@ Q.8) What is a Service in Kubernetes, and what are the types of Services?
 -> A service in Kubernetes is an abstraction that defines a stable network endpoint to access one or more Pods. Pods are ephemeral - they can be created, destroyed, or rescheduled at any time, so their IP address change frequently.
 - Cluster ip -> Exposes the service internally within the cluster, only inside the Cluster.
 - NodePort -> Exposes the service on a static port (30000-32767) on each Node's IP, From outside the cluster using <NodeIP>:<NodePort>
-- LoadBalancer -> Provisions an external load balancer (from cloud provider), From outsode the cluster via public IP.
+- LoadBalancer -> Provisions an external load balancer (from cloud provider), From outside the cluster via public IP.
 
 - Example - ClusterIP Service for Nginx Deployment
  
