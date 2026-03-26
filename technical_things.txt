@@ -6377,3 +6377,18 @@ Instead of deleting logs in future, use:
 Q. 609) for cisco preperation -> SD-WAN, VPC, VNET design, Hybrid connectivity (VPN, direct connect, express route), load balancing DNS, routing 
 track: latency, traffic, packet loss, service health, network latency spike, firewall rules, vulnerability fix, compliance standards, Network trgoughput,
 TCP/IP, DNS, BGP, VPN. look at logs (packet drops, latency).
+
+- SD-WAN -> SD-WAn addresses the current IT challenges. This new approach to network connectivity can lower operational 
+costs and improve resource usage for multisite deployments. network administrators can use bandwidth more efficiently and 
+can help ensure high levels of performance for critical application without sacrificing security or data privacy.
+
+benifits -> Better application experience, More security, optimized cloud connectivity, simplified management, 
+
+-------------------------------------------------------------------------------------------------------
+
+- VPC -> A virtual private cloud (VPC) is a secure, isolated private cloud hosted within a public cloud. VPC customers 
+can run code, store data, host websites, and do anything else they could do in ordinary private coud, but the private cloud
+is hosted remotely by a public cloud provider.
+
+--------------------------------------------------------------------------------------------------
+
