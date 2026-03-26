@@ -6374,4 +6374,6 @@ Instead of deleting logs in future, use:
 
 ---------------------------------------------------------------------------------
 
-Q. 609) 
+Q. 609) for cisco preperation -> SD-WAN, VPC, VNET design, Hybrid connectivity (VPN, direct connect, express route), load balancing DNS, routing 
+track: latency, traffic, packet loss, service health, network latency spike, firewall rules, vulnerability fix, compliance standards, Network trgoughput,
+TCP/IP, DNS, BGP, VPN. look at logs (packet drops, latency).
