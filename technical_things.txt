@@ -6462,4 +6462,44 @@ appropriate information required for domain name resolution.
 
 --------------------------------------------------------------------------------------
 
-- 
+- routing -> Network routing is the process of selecting the best path for data to travel across one or more networks.
+it plays a vital role in the internet by ensuring that data packets reaches their correct destination efficiently.
+routing determines the path IP packets follow from source to destination. different routing methods are used to optimize 
+speed, reliability, and performance.
+
+Router -> A router is a networking device that controls how data moves between different networks by checking destination
+IP addresses and choosing the best path.
+- Forwards data packets between networks, works at layer 3 (Network Layer) of the OSI model, Selects the best route for 
+data transfer.
+
+- Different Types of Routing -> Routing is typically of 3 types, each serving its purpose and offering different functionalities:
+
+1) Static Routing -> Static routing is a non-adaptive routing method where routes are configured manually by the network
+administrator. it provides complete control over routing decision but is best suited for small networks.
+- Routes are added manually, Full control over packet routing, Simple but hard to manage in large networks.
+
+2) Dynamic Routing -> Dynamic routing is an automatic and adaptive routing method where routers choose paths using algorithms.
+it is widely used in modern networks due to its flexibility.
+- Routes update automatically, Adapts to network changes, Suitable for large networks.
+
+3) Default Routing -> Default routing sends packets to a predefined gateway when no specific route is available. it is 
+commonly used in networks with a single exit point.
+- used when no route is found, simple and efficient setup, Default rout: 0.0.0.0/0
+
+-----------------------------------------------------------------------------------------------
+
+- What is network latency? how to find the network latency?
+-> Network latency is the delay in network communication. it shows the time that takes to transfer across the network. 
+network with a longer delay or lag have high latency, while those with fast response times have low latency. 
+what are the causes of network latency?
+- Transmission medium
+- Distance the network traffic travels
+- number of network hops
+- Data volume
+- Server performance
+
+- How can you measure network latency?
+-> using ping command -> network admins use the ping command to determine the tie required for 32 bytes of data to reach
+its destinations and receive a return response. it is a way to identify how reliable a connection is.
+
+---------------------------------------------------------------------------
