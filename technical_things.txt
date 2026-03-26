@@ -6351,3 +6351,27 @@ WRITE AN ANSIBLE PLAYBOOK for the above scenario.
 
 -----------------------------------------------------------------------------
 
+Q. 608) in my linux system 1 log file have utilised 20 GB disk space, i have removed that file but in system disk space not got free what could be the issue?
+
+-> this is very common linux issue. if you deleted a log file but disk space is still not freed, the most
+likely reson is:
+the file was deleted but still opened by a running process:
+in linux, disk space is only freed when:
+1. File is deleted and
+2. No process (like nginx, paache, java, etc.) still has the file open, space will not be released.
+
+lsof | grep deletd
+
+option 1 - Restart the service
+systemctl restart <service_name>
+
+opetion 2 - kill the process
+kill -9 <PID>
+
+option 3 - Truncate file without deleting (Best practice for logs)
+Instead of deleting logs in future, use:
+> logfile.log
+
+---------------------------------------------------------------------------------
+
+Q. 609) 
