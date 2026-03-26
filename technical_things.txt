@@ -6510,5 +6510,56 @@ receiving device or computer.
 - Types of network Traffic ->
 There are two general categories of network traffic: real-time and non-real time.
 
-- Real-time traffic -> traffic deemed important or critical to business operations must be delivered on time and with the 
+- Real-time traffic -> traffic deemed important or critical to business operations must be delivered on time and with the
+
+----------------------------------------------------------------------------
+
+- how to check packet loss ->  to check packet loss in networking, there are several common tools used in Linux/networking
+environments. the most common are ping,mtr,traceroute,iperf.
+i use ping for basic packet loss check, mtr to identify which hop is dropping packets, traceroute to see network path,
+and iperf for bandwidth and packet loss testing between servers.
+
+---------------------------------------------------------------------------
+
+- service health -> Service health means checking whether an application/service is running, reachable, responding 
+correctly, and performing well. in SRE / networking / cisco environments.
+- health check using below commonds :
+- systemctl status nginx
+- ps -aux | grep -i nginx
+- journalctl -u nginx
+
+-------------------------------------------------------------------------------
+
+- network latency spike -> A network latency spike means the network response time suddenly increases for a short period.
+This is a very common SRE interview questions.
+Latency = time taken for a packet to travel from source to destination (RTT).
+- Normal latency: 10 ms
+- Spike latency: 200 ms for few minutes
+
+user experience -> slow applications, VPN lag, SSH lag, Packet retransmissions, Timeouts
+- first i will verify latency using ping. then i will run MTR (my traceroute) to identify which hop latency increases.
+i will check packet loss and bandwidth utilization. Then i will check interface errors, drops, and CPU utilization
+on network devices. if latency starts after ISP hop, i will escalate to ISP. if inside network, i will check congestion,
+QoS, routing changes, or firewall/VPN load.
+
+--------------------------------------------------------------------------
+
+- firewall rules -> Firewall rules are security policies that control network traffic based on source, destination,
+port, and protocol. rules are processed top-down and first match win. typically we allow required traffic like SSH,
+HTTP, HTTPS and deny all other traffic as part of default deny security policy.
+
+- Most common rules:
+ALlow 80/443
+Allow 22 from office
+Allow App -> DB
+Deny All
+
+-----------------------------------------------------------------
+
+- vulnerability fix -> First we run vulnerability scan using tools like Snyk, then we analyze CVSS score and prioritize
+critical vulnerabilities. most vulnerabilities are fixed by patching OS packages or upgrading software versions.
+we also close unused ports, harden SSH configuration, remove unused packages, and apply firewall rules. after 
+patching, we rescane to verify vulnerability is fixed.
+
+------------------------------------------------------------------
 
