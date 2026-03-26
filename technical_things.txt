@@ -6503,3 +6503,12 @@ what are the causes of network latency?
 its destinations and receive a return response. it is a way to identify how reliable a connection is.
 
 ---------------------------------------------------------------------------
+
+- Network traffic -> Network traffic is the amount of data moving scross a computer network at any given time. Network 
+traffic, also called data traffic, is broken down into data packets and sent over a network before being reassembled by the 
+receiving device or computer.
+- Types of network Traffic ->
+There are two general categories of network traffic: real-time and non-real time.
+
+- Real-time traffic -> traffic deemed important or critical to business operations must be delivered on time and with the 
+
