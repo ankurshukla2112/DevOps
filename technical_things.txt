@@ -6376,7 +6376,7 @@ Instead of deleting logs in future, use:
 
 Q. 609) for cisco preperation -> SD-WAN, VPC, VNET design, Hybrid connectivity (VPN, direct connect, express route), load balancing DNS, routing 
 track: latency, traffic, packet loss, service health, network latency spike, firewall rules, vulnerability fix, compliance standards, Network trgoughput,
-TCP/IP, DNS, BGP, VPN. look at logs (packet drops, latency).
+TCP/IP, DNS, BGP, VPN. look at logs (packet drops, latency), VPP (Vector Packet Processing), (IAM roles, RBAC, service accounts), building AI-native SRE tools or MCP server development.
 
 - SD-WAN -> SD-WAn addresses the current IT challenges. This new approach to network connectivity can lower operational 
 costs and improve resource usage for multisite deployments. network administrators can use bandwidth more efficiently and 
