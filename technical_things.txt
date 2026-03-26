@@ -6392,3 +6392,74 @@ is hosted remotely by a public cloud provider.
 
 --------------------------------------------------------------------------------------------------
 
+- VNET design -> Azure virtual network cheat sheet, you can create a virtual network in the cloud dedicated to your Azure 
+account. it is the fundamental building block where you can launch Azure resources. azure vnet is the networking layer 
+of Azure VMs. v net spans all the availability zones in the region. after creating a VNET, you can add one or more subnet
+in each availability zone.
+a virtual network (VNet) allows you to specify an IP address range for the VNet, add subnets, associate network security
+groups, and configure route tables. a subnet is a range of IP address in your VNet. you can launch AZure resources into a 
+specified subnet. use a public subnet for resources need to connect to the internet and private subnet for resources thst
+won't be cobbected to the internet.
+
+---------------------------------------------------------------------------
+
+- VPN -> A virtual Private Network (VPN) is a technology that creates an encrypted tunnel between your device and a 
+VPN server over the internet, so your traffic travels privately and your real IP address is hidden.
+privacy protection, security on public wi-fi, Bypass geo-restrictions, Secure remote access: let employee connect to 
+internal company resources securely from outside the organization.
+
+- working -> connection establishment, Data encryption, Traffic redirection (tunnelling), Decryption and forwarding,
+End-to-end protection.
+
+Types of VPN -> 
+- Remote Access VPN -> it allows an individual user to securely connect to a private network over the internet, and 
+it is widely used by employees working remotely.
+- Site-to-Site VPN -> it securely connects two or more separate networks, such as a head office and branch offices, so 
+internal communication remains protected across locations.
+- Mobile VPN -> it is designed for mobile users and keeps the vpn session stable even when the device switches between 
+Wi-Fi and cellular networks.
+- MPLS VPN -> it is provide-managed enterprise WAN solution that offers scalable connectivity and traffic 
+prioritization, but it typically does not provide end-to-end encryption by default.
+
+--------------------------------------------------------------------------------------
+
+- direct connect -> AWS Direct Conenct works by creating a dedicates physical connection between your on-premises network 
+and an AWS Locations. This connection uses fiber and Ethernet cabkes to link your on-premises network and an AWS Location.
+This connection uses fiber and Ethernet cables to link your network directly to an AWS router, avoiding the public internet.
+once the physical connection is in place, a virtual interface (VIF) is set up to create a secure connection between your
+network and AWS, allowing you to access AWS services easily and securely.
+
+--------------------------------------------------------------------------------------
+
+- express route -> ExpressRoute is a simple way to create a private connection betwen your company's network and a Microsoft
+Azure datacenter. By bypasing the public internet altogether, an ExpressRoute connection ensure greater uptime as well 
+as faster transfer speeds. Depending on the size of your company and how much data you transfer, an expressRoute connection
+may cut down significantly on your expenses.
+Reliability and Speed, ExpressRoute Global Reach, ExpressRoute Availability and Connectivity Providers, 
+
+-------------------------------------------------------------------------------------
+
+- DNS -> DNS is a system that translates human-readable domain names into IP address so computers can communicate over 
+the internet. it works in a hierarchical and distributed manner to efficiently resolve queries. DNS ensures user can access
+website without remembering numeric IP addresses. it also improves performance using caching.
+- example -> when you enter google.com in a browser, DNS converts it into an IP address (like 142.x.x.x), allowing your
+system to connect to the correct server.
+
+- Types of Domains -> DNS categorizes domain names into different types to organize the global system and support
+both forward and reverse resolution.
+1) Generic domain -> These domain are used for general purposes and are not tied to any country. include extensions like 
+.com, .org, .net, .edu.
+not restricted to any specific country, used for commercial, orzanizational, and educational purposes.
+
+2) Country COde Domains -> These domains represent specific countries or geographic regions, examples: .in(india), .us(USA),
+.uk(UK), .jp(Japan), managed by respective national authorities.
+
+3) Inverse Domains (Reverse DNS):- these domains are used to map IP address back to domain names:
+- used for reverse lookup (IP address -> domain name)
+
+- Domain name server -> A domain name server is a server that stores DNS records and responds to queries by providing the 
+appropriate information required for domain name resolution.
+
+--------------------------------------------------------------------------------------
+
+- 
