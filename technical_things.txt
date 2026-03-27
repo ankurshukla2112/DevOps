@@ -6563,3 +6563,24 @@ patching, we rescane to verify vulnerability is fixed.
 
 ------------------------------------------------------------------
 
+compliance standards -> Compliance standards are regulatory or industry requirements thst organizations must followed
+to ensure security, data protection, legal operation, and risk management. Examples includes ISO 27001, SOC 2, GDPR, and 
+PCI DSS. in IT, compliance involves access control, encryption, logging, patching, and audit trails.
+
+------------------------------------------------------------------
+
+- Network Throughput -> Network throughput is the actual amount od data successfully transferred over a network per second.
+it is usually measured in:
+- Mbps (Megabits per seconds)
+- Gbps (Gigabits per second)
+- MB/s (Megabytes per second)
+
+- how to check netwoek throughput -> using ipers command
+
+- Network throughput is the actual rate of successful data transfer over a network, measured in Mbps or Gbps. it 
+affected by latency, packet loss, congestion, MTU, and TCP window size. we can measure throughput using tools like iperf,
+nload, iftop, sar, and monitoring tools like Prometheus or NetFlow.
+
+--------------------------------------------------------------------------------------
+
+TCP/IP -> 
