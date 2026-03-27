@@ -6583,4 +6583,36 @@ nload, iftop, sar, and monitoring tools like Prometheus or NetFlow.
 
 --------------------------------------------------------------------------------------
 
-TCP/IP -> 
+- VPP -> Vector Packet Processing is a high-performance packet processing framework used to forward network packets very fast 
+using software instead of traditional hardware routers. it is widely used in SD-WAN, NFV, virtual routers, firewalls, load balancers.
+VPP is part of the FD.io project and originally developed by Cisco. VPP bypass the Linux kernel and processes packets in user space ->
+much faster (10-100 Gbps).
+- How VPP works (SImple Explanation) -> VPP processes packets in vectors (batches) instead of one packet at a time.
+process packet 1,2,3,4,5 together.
+
+----------------------------------------------------------------------------------
+
+- Service Accounts -> A service account in kubernetes is an identity used by pods to authenticate with the kubernetes API
+server and access cluster resources. it is used for machine-to-machine communication and permissions are controlled using RBAC 
+roles and role bindings.
+
+------------------------------------------------------------------------------------
+
+- building AI-native SRE tools or MCP server development -> AI-native SRE tools are systems where AI/LLMs are built into the core
+of observability, troubleshooting, and automation, not just added on top.
+
+Traditional SRE tools:- Monitoring -> Alert -> Human investigates -> Fix
+AI-native SRE:- Monitoring -> AI detects anomaly -> AI investigates -> AI suggests/executes fix
+
+- Real-worls Tools :- Datadog, Prometheus, Grafana
+
+- MCP -> model context protocol, it's a standard way to connect AI models (like LLMs) with external tools, APIs, and systems.
+API layers between AI and your infrastructure /tools
+
+- AI-native SRE tools integrate AI/LLMs into observability and operations to automatically detect issues, perform root cause
+analysis, and suggest or execute remediation. MCP(Model Context Protocol) is a framework that allows LLMs to interact with external
+systems like monitoring tools, kubernetes, and cloud APIs, enabling intelligetn automation and decision-making in SRE workflows.
+
+----------------------------------------------------------------------------------------------------
+
+ 
