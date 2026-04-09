@@ -6615,4 +6615,47 @@ systems like monitoring tools, kubernetes, and cloud APIs, enabling intelligetn 
 
 ----------------------------------------------------------------------------------------------------
 
- 
+ - A vm is up and running, but we can't able to do ssh we have requirement come's to change someting in an application how we do trubleshoot?
+-> - ping the server:
+     ping <vm-ip>
+   - check port 22:
+     telnet <vm-ip> 22
+   - if using AWS:
+     check security Groups, port 22 should be open, check NACLs, verify correct public/private IP
+   - If using on-perm:
+     Firewall rules (iptables/external firewall), VPN/routing issues
+   - Verify SSH Service Status (Without SSH)
+     Since SSH is not working, use alternative access:
+   - Cloud console access:
+     AWS -> EC2 instance connect/ssm (systemctl status sshd)
+   - Check SSH configyration issues
+     check config file: vi /etc/ssh/sshd_config
+   - restart Network / VM (Last Option)
+     Restart SSH (systemctl restart sshd)
+
+------------------------------------------------------------------------------------------
+
+Q. A lod balancer how distribute the load and every node?
+-> A load balancer sits in front of multiple servers (nodes) and distributes incoming traffic so
+no single node gets overloaded. how it distributes depends on the algorithm + health checks + configuration.
+
+- How Load balancer Distributes Traffic
+1) Round Robin (Most Common)
+- Request GO one by one to each server in order
+example:
+  Request 1 -> Node A
+  Request 2 -> Node B
+  Request 3 -> Node C
+  Request 4 -> Node A
+Simpe and works well when all nodes are same capacity
+
+2) Weighted Round Robin 
+  Each node gets traffic based on its capacity
+ exapmple:
+  Node A (weight 3), Node B (weight 1)
+  Traffic:
+  A -> A -> A -> B -> repeat
+  useful when servers have different CPU/RAM
+----------------------------------------------------------------------------
+
+Q. 
