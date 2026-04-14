@@ -6658,4 +6658,7 @@ Simpe and works well when all nodes are same capacity
   useful when servers have different CPU/RAM
 ----------------------------------------------------------------------------
 
-Q. 
+- Flannel -> use flannel for simple, lightweight networking without security requirements (dev/test)
+- Calico -> Use calico when you need network policies, better performance, and production-grade security.
+
+----------------------------------------------------------------------------
