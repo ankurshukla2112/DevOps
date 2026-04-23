@@ -6662,3 +6662,21 @@ Simpe and works well when all nodes are same capacity
 - Calico -> Use calico when you need network policies, better performance, and production-grade security.
 
 ----------------------------------------------------------------------------
+
+Q. Infrastructure as Code (IaC), you refactor your Terraform code for existing AWS Resources. upon running
+terraform apply, it attempts to recreate those resources. how do you prevent this?
+Q. what specifically does Terragraunt provide that isn't native to Terraform?
+Q. What is a significant disadvantage of using Terraform in a large-scale environment?
+Q. (Networking & Traffic Management) why can an NLB handle millions of requests while an ALB hits scaling limits
+much earlier?
+Q. Trace the path: When a client hits a URL, explain the step-by-step journey until it reaches an EC2 instance.
+Q. What is the difference Transit Gateway vs. VPC Peering?
+Q. TLS vs SSL: What are the actual differences, and how did you configure, store, and rotate certificates for
+you applications?
+Q. How do you prevent "inapt" or unverified images from pulled from a Docker registry?
+Q. which SAST and DAST tools have you implemented in your CI/CD pipelines?
+Q. Can you explain the high-level architecture of your current CI/CD infrastructure?
+Q. What are the various ways to cache S3 bucker content for better performance?
+Q. What is a Resource Group in AZURE, and What is its primary purpose?
+Q. What if etcd down in kubernetes?
+Q. Kubectl command explained internally work?
