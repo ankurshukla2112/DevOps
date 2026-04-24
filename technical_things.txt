@@ -6678,5 +6678,382 @@ Q. which SAST and DAST tools have you implemented in your CI/CD pipelines?
 Q. Can you explain the high-level architecture of your current CI/CD infrastructure?
 Q. What are the various ways to cache S3 bucker content for better performance?
 Q. What is a Resource Group in AZURE, and What is its primary purpose?
+
+------------------------------------------------------------------------------------
+
 Q. What if etcd down in kubernetes?
-Q. Kubectl command explained internally work?
+-> If etcd goes down, it’s a serious situation because it’s the source of truth for Kubernetes.
+
+Let’s break it down clearly 👇
+
+🔹 What is etcd’s role?
+
+etcd stores:
+
+Cluster state (pods, deployments, nodes)
+Configurations
+Secrets (encrypted)
+
+👉 Think of it as the database of Kubernetes
+
+🔴 What happens if etcd is DOWN?
+1. API Server becomes unusable
+kube-apiserver depends on etcd
+Without etcd:
+Cannot read/write cluster state
+Most API calls fail
+2. kubectl stops working
+
+Commands like:
+
+kubectl get pods
+kubectl apply -f file.yaml
+
+👉 Will fail or hang (API server can’t respond properly)
+
+3. No new scheduling
+kube-scheduler can’t assign new pods
+Controllers can’t reconcile state
+4. Running workloads may continue (temporarily)
+Existing containers on nodes keep running
+Because:
+kubelet manages them locally
+
+👉 BUT:
+
+No scaling
+No healing if something crashes
+5. Cluster becomes “read-only / frozen”
+No updates
+No deployments
+No config changes
+🔥 Worst Case Scenario
+
+If etcd data is lost:
+
+Entire cluster state is gone
+You may need to rebuild cluster
+🔹 How to handle / prevent this?
+✅ 1. Use etcd cluster (HA setup)
+Run 3 or 5 nodes (odd number)
+Uses quorum
+
+👉 If 1 node fails → cluster still works
+
+✅ 2. Regular backups
+etcdctl snapshot save backup.db
+
+👉 This is critical in production
+
+✅ 3. Restore process
+etcdctl snapshot restore backup.db
+
+Then restart control plane
+
+✅ 4. Managed Kubernetes (best option)
+
+Use services like:
+
+Amazon EKS
+
+👉 AWS manages etcd for you (HA + backups)
+
+🔹 Real DevOps Interview Answer (short)
+
+👉 “If etcd is down, Kubernetes control plane becomes non-functional. API server cannot serve requests, scheduling stops, but existing workloads may continue temporarily. To prevent this, we use HA etcd clusters and regular backups.”
+
+💡 Pro Tip
+etcd failure = control plane failure
+But not immediate data plane failure
+
+--------------------------------------------------------------------------------------
+
+Q. Kubectl command explained how it internally work?
+-> kubectl looks simple on the surface, but internally it’s just a client talking to the Kubernetes control plane via APIs.
+
+Let’s break it down in a clear, real DevOps way 👇
+
+🔹 What is kubectl?
+
+kubectl is a CLI tool used to interact with a Kubernetes cluster.
+
+👉 Whatever command you run → it becomes an API request to the cluster.
+
+🔹 High-Level Flow (Internal Working)
+
+When you run:
+
+kubectl get pods
+Internally:
+kubectl reads config
+From ~/.kube/config
+Finds:
+Cluster endpoint (API server URL)
+Credentials (token/cert)
+Authentication & Authorization
+kubectl sends request to:
+👉 kube-apiserver
+API server checks:
+Who are you? (Auth)
+Are you allowed? (RBAC)
+API Server processes request
+Central entry point of Kubernetes
+Talks to:
+etcd (cluster state DB)
+Fetch data from etcd
+Pods info stored in etcd
+API server retrieves it
+Response back to kubectl
+JSON response returned
+kubectl formats it (table, YAML, JSON)
+🔁 For "create/apply" commands
+
+Example:
+
+kubectl apply -f deployment.yaml
+Internal flow:
+kubectl → sends YAML as API request
+API server → validates object
+Stores desired state in etcd
+Controllers take over:
+kube-controller-manager ensures desired state
+kube-scheduler assigns pods to nodes
+Worker node:
+kubelet creates containers
+Container runtime runs them
+🔹 Visual Flow (Simple)
+kubectl → API Server → etcd
+                 ↓
+     Scheduler / Controllers
+                 ↓
+             Worker Nodes
+🔹 Key Concepts
+✅ kubectl is stateless
+No logic of cluster inside it
+Just a client
+✅ API Server is the brain gateway
+All communication goes through it
+✅ Declarative model
+You say: “I want 3 pods”
+Kubernetes ensures it
+
+--------------------------------------------------------------------------------------
+
+Q. how we can do the setting in aws for configure a cluster to use 70% Spot + 30% On-Demand and where we have put those things?
+-> You don’t set “70% Spot + 30% On-Demand” in one magic toggle—you achieve it using Auto Scaling + mixed capacity (for EC2) or managed node groups / autoscalers (for Kubernetes).
+
+I’ll explain both common real-world setups 👇
+
+🔹 Option 1: EC2 Auto Scaling Group (Mixed Instances Policy)
+
+This is the most direct way in AWS using Amazon EC2.
+
+📍 Where to configure?
+
+👉 AWS Console → EC2 → Auto Scaling Groups → Create ASG
+
+⚙️ Steps:
+Create a Launch Template
+AMI, instance type, security group, etc.
+Create Auto Scaling Group
+Choose the Launch Template
+Under “Instance purchase options”
+Select 👉 Mixed instances policy
+Configure:
+On-Demand Base Capacity → e.g. 30
+On-Demand Percentage Above Base Capacity → 30%
+🧠 How AWS interprets it:
+
+Example: total instances = 10
+
+Base = 3 (On-Demand)
+Remaining 7 → 30% On-Demand, 70% Spot
+
+👉 Final ≈ 3–4 On-Demand + 6–7 Spot
+
+🔥 Important fields:
+On-Demand Base Capacity → minimum stable nodes
+On-Demand % Above Base → controls ratio
+Spot Allocation Strategy → use capacity-optimized (best practice)
+🔹 Option 2: Kubernetes (EKS) – Recommended for DevOps/SRE
+
+If you're using Amazon EKS, this is how companies usually do it.
+
+📍 Where to configure?
+
+👉 In:
+
+EKS Node Groups
+OR Cluster Autoscaler / Karpenter
+⚙️ Approach:
+✅ Method 1: Two Node Groups (simple & common)
+
+Create:
+
+1. On-Demand Node Group
+Instance type: m5.large (example)
+Min: 3 nodes
+2. Spot Node Group
+Instance types: multiple (m5, c5, r5, etc.)
+Capacity type: SPOT
+Min: 0, Max: high
+🎯 How 70/30 is achieved?
+Keep minimum baseline (30%) in On-Demand
+Let autoscaler scale Spot nodes for rest (70%)
+
+👉 Controlled by:
+
+Cluster Autoscaler
+Pod scheduling
+✅ Method 2: Karpenter (modern approach)
+
+With Karpenter:
+
+Define provisioners
+Set:
+capacity-type: spot + on-demand
+weight / priority
+
+👉 Karpenter automatically balances cost + availability
+
+🔹 Where exactly do you "put" this?
+✔️ EC2 setup:
+AWS Console → Auto Scaling Group → Mixed Instances Policy
+✔️ EKS setup:
+AWS Console → EKS → Node Groups
+OR Infrastructure as Code:
+Terraform
+CloudFormation
+🔥 Real-world DevOps setup (important)
+
+Most companies:
+
+Use Terraform to define:
+ASG with mixed policy
+EKS node groups (Spot + On-Demand)
+💡 Practical Example
+Total nodes needed = 10
+
+On-Demand Node Group:
+- min = 3
+
+Spot Node Group:
+- scales up to 7
+
+Result:
+→ ~30% stable infra
+→ ~70% cost-optimized
+⚠️ Key Best Practices
+Always use multiple instance types for Spot
+Use capacity-optimized strategy
+Add taints/labels in Kubernetes:
+Critical pods → On-Demand
+Flexible pods → Spot
+
+-------------------------------------------------------------------------------------------
+
+Q. in kubernetes if we are using stateless set for deployment and application or website content or some data where to store? b'coz in stateless
+we are not using PV and PVC?
+-> You’re right about the core idea: stateless apps don’t store data locally, so you have to externalize the data somewhere else. But it’s a misconception that you “don’t use PV/PVC at all”—you can, depending on the use case.
+
+Let’s make it practical 👇
+
+🔹 What “stateless” really means in Kubernetes
+
+A stateless app (usually deployed via a Deployment, not StatefulSet) means:
+
+Pods can be killed/recreated anytime
+No important data is stored inside the container filesystem
+
+👉 So data must live outside the pod
+
+🔹 Where do you store data then?
+✅ 1. External Databases (most common)
+Store app data in:
+MySQL / PostgreSQL
+MongoDB
+Redis (cache)
+
+👉 These run:
+
+Outside cluster (managed services)
+Or inside cluster using Stateful workloads
+✅ 2. Object Storage (for files, images, content)
+Store static content in:
+Amazon S3
+
+👉 Use cases:
+
+Website images
+Uploads
+Logs
+Backups
+✅ 3. ConfigMaps & Secrets (small data only)
+Store:
+Config files
+Environment variables
+API keys (via Secrets)
+
+⚠️ Not for large or dynamic data
+
+✅ 4. PV/PVC (Yes, sometimes used even with stateless apps)
+
+You said stateless apps don’t use PV/PVC—that’s not always true.
+
+👉 You can still use:
+
+PersistentVolume
+PersistentVolumeClaim
+When?
+Shared file storage (e.g., NFS, EFS)
+Temporary but persistent data
+Legacy apps needing filesystem
+
+👉 Example:
+
+WordPress frontend (stateless) + shared uploads via PVC
+✅ 5. Caching Layer
+Use Redis / Memcached
+Improves performance
+Still external to pod
+🔹 Real-world architecture (very important)
+[User Request]
+      ↓
+[Stateless App Pod]
+      ↓
+--------------------------
+| DB (RDS / MongoDB)     |
+| Object Storage (S3)    |
+| Cache (Redis)          |
+--------------------------
+
+👉 App = stateless
+👉 Data = external systems
+
+🔥 Key Rule (must remember)
+
+👉 Never store important data inside a container
+Because:
+
+Pod restart = data loss
+🔹 When do we use StatefulSet then?
+
+Use StatefulSet when:
+
+App itself manages data
+Needs stable identity + storage
+
+Examples:
+
+Databases
+Kafka
+Elasticsearch
+🔹 Interview-ready answer
+
+👉 “In stateless applications, we don’t store data inside pods. Instead, we use external storage like databases, object storage (S3), 
+or caching systems. PV/PVC can still be used if shared or persistent file storage is required, but typically business data is kept outside 
+the application layer.”
+
+----------------------------------------------------------------------------------------------------------------------
+
+Q. 
