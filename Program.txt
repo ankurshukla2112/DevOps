@@ -1,1 +1,93 @@
+1) write a shell script for checking the service status and if service is down then it will start. need to set cron job for every 5 min.
 
+-> #!/bin/bash
+
+# Service Name
+SERVICE_NAME="nginx"
+
+# Check service status
+systemctl is-active --quiet $SERVICE_NAME
+
+if [ $? -ne 0 ]; then
+    echo "$(date) : $SERVICE_NAME is down. Starting service..." >> /var/log/service_monitor.log
+    
+    # Start the service
+    systemctl start $SERVICE_NAME
+
+    # Verify service started successfully
+    if systemctl is-active --quiet $SERVICE_NAME; then
+        echo "$(date) : $SERVICE_NAME started successfully." >> /var/log/service_monitor.log
+    else
+        echo "$(date) : Failed to start $SERVICE_NAME." >> /var/log/service_monitor.log
+    fi
+else
+    echo "$(date) : $SERVICE_NAME is running." >> /var/log/service_monitor.log
+fi
+
+set the cron job -> */5 * * * * /usr/local/bin/check_service.sh
+
+---------------------------------------------------------------------------------------------------------
+
+2) write a python program to get the 7 day old log files?
+->
+import os
+import time
+from datetime import datetime
+
+# Directory containing log files
+log_directory = "/var/log"
+
+# Current time
+current_time = time.time()
+
+# 7 days in seconds
+seven_days = 7 * 24 * 60 * 60
+
+print("Log files older than 7 days:\n")
+
+# Traverse directory
+for root, dirs, files in os.walk(log_directory):
+    for file in files:
+        file_path = os.path.join(root, file)
+
+        try:
+            # Get file modification time
+            file_mtime = os.path.getmtime(file_path)
+
+            # Check if file is older than 7 days
+            if (current_time - file_mtime) > seven_days:
+                modified_date = datetime.fromtimestamp(file_mtime)
+
+                print(f"File: {file_path}")
+                print(f"Last Modified: {modified_date}")
+                print("-" * 50)
+
+        except Exception as e:
+            print(f"Error accessing {file_path}: {e}")
+
+---------------------------------------------------------------------------------------------
+
+3) using sed command find a word and replace it from the file?
+-> sed -i 's/old_word/new_word/g' filename
+
+---------------------------------------------------------------------------------------------
+
+4) write a python program to check the input no is palindrom or not?
+->
+ a = input("enter sequence no")
+ b = a[::-1]
+ if a==b:
+ print("no is palindrome")
+ else:
+ print("not palindrome")
+
+-----------------------------------------------------------------------------------------------
+
+5) write a script to SSL certificate renewal?
+->
+#!/bin/bash
+# Renew certificates using certbot
+certbot renew
+systemctl reload nginx
+
+---------------------------------------------------------------------------------------
