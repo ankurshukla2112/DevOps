@@ -155,3 +155,25 @@ if i not in mums:
 break
 
 ---------------------------------------------------------------
+
+12) write a script to find the spacial caracter in the file?
+-> sed 's/[^a-zA-Zo-9]/g' file.txt
+
+----------------------------------------------------------------
+
+13) write a python program to reverse list?
+-> li=['a','b','c','d']
+   print(li)
+   li.reverse()
+   print(li)
+
+-----------------------------------------------------------------------------
+
+14) Write a program to Remove duplicate no?
+-> a = [1,1,1,2,3]
+   a = list(set(a))
+   print(a)
+
+----------------------------------------------------------------------------
+
+15) 
