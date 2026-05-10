@@ -181,3 +181,38 @@ break
    print(li.count(4))
 
 ---------------------------------------------------------------------------
+
+16) find largest and small no. from the list.
+-> a = [1,3,4,5,6,78,234,567]
+   a_sorted = sorted(a)
+   min_value = a_sorted[0]
+   max_value = a_sorted[-1]
+   print(f"min = {min_value}, max={max_value}")
+
+------------------------------------------------------------------------------
+
+17) arr = ["aba", "aa", "ad", "vcd", "aba"]
+    max_len = max(len(s) for s in arr)
+    for s in arr:
+        if len(s) == max_len:
+          print(s,end=" ")
+
+-------------------------------------------------------------------------------
+
+18) parse log file (search logs from logfiles)
+    keyword = "timeout"
+    withopen("app.log","r") as file:
+    for line in file:
+       if keyword in line:
+          print(line.strip())
+
+---------------------------------------------------------------------------
+
+19) write a python program to call API using python?
+-> import requests
+   url = "https://www.google.com"
+   response = request.get(url)
+   print ("statuscode", response.status-code)
+   print ("Response Body :", response.txt)
+
+--------------------------------------------------------------------------
