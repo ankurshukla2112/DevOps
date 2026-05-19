@@ -7056,4 +7056,17 @@ the application layer.”
 
 ----------------------------------------------------------------------------------------------------------------------
 
-Q. 
+Q. what is the command to get the kubernetes pod list and namespaces list?
+-> kubectl get pods --all-namespaces
+
+---------------------------------------------------------------------------------------------------------------------
+
+Q. how to copy the data from kubernetes pod to locall host?
+-> kubectl cp default/nginx-pod:/var/log/nginx ./nginx-logs
+
+----------------------------------------------------------------------------------------------------------------
+
+Q. how to restart kubernetes pod without downtime?
+-> kubectl rollout restart
+
+--------------------------------------------------------------------------------------------
