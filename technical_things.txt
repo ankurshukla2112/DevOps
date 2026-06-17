@@ -7070,3 +7070,19 @@ Q. how to restart kubernetes pod without downtime?
 -> kubectl rollout restart
 
 --------------------------------------------------------------------------------------------
+
+Q. what is the difference between docker export and docker save?
+-> - docker save is used to back up or transfer a Docker image, preserving all its layers, tags, and metadata.
+   - docker export is used to extract a running/stopped container's filesystem as a flat archive, but it does not preserve image history, layers, or metadata.
+
+Simple memory trick:
+save = image backup
+export = container filesystem snapshot
+
+--------------------------------------------------------------------------------------------
+
+Q. how to revert or rollback the deployment using helm?
+-> use helm rollback <release-name> <revision-number> -n <namespace> to revert to an earlier deployment version.
+   First check the revision number with helm history <release-name> -n <namespace>, then roll back to the version you want Example: helm rollback my-app 3 -n prod.
+
+-----------------------------------------------------------------------------------------
