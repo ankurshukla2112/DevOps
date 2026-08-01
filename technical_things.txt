@@ -7117,3 +7117,32 @@ Finally, saturation is also concerened with predictions of impending saturation,
 will fill its hard drive in 4 hours."
 ----------------------------------------------------------------------------------
 
+Q. -> we are deploying an application, while deploy time developer asking to bypass the container image vulnerability scan, what will be
+our approach?
+-> If a developer requests bypassing the container vulnerability scan, i first review the vulnerability
+report to understand the severity and impact. if the vulnerabilities are critical or high, i do not bypass
+them without security/appsec approval. i discuss the issue with the development and security teams, verify
+weather it is a false positive or an acceptable business risk, and ensure proper documentation and risk
+acceptance. if an exception is approved, i implement only a temporary suppression, proceed with deployment
+if permitted by policy, and create a remediation ticket to fix the vulnerabilities in the next release. 
+this balances business continuity with security compliance.
+
+- Don't bypass security conrols without approval.
+- Follow organizational security policies.
+- Perform risk assessment.
+- Involve the security/Appsec team.
+- Document exceptions.
+- Ensure vulnerabilities are remediated later.
+
+----------------------------------------------------------------------------
+
+Q. what is the difference between scripted pipeline and declarative structure pipeline?
+-> I generally prefer Declarative Pipelines because they are easier to read, maintain, and align with
+jenkins best practices. they provide built-in support for stages, post actions, environment variables, 
+and conditional execution. However, if i need advanced Groovy scripting, dynamic stage genaration, 
+or highly customized workflows, I use Scripted pipelines or embed script{} blocks within a Declarative
+pipeline to combine readability with flexibility.
+
+--------------------------------------------------------------------------------
+
+Q.
