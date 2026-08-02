@@ -7145,4 +7145,70 @@ pipeline to combine readability with flexibility.
 
 --------------------------------------------------------------------------------
 
-Q.
+Q. How do you upgrade a Kubernetes cluster without downtime?
+-> To upgrade a Kubernetes cluster without downtime, i follow a phased approach that
+upgrade the control plane first and then the worker nodes while ensuring application availability.
+
+Step 1: Assess compatibility
+- Review the kubernetes release notes and deprecations.
+- verify compatibility of:
+  - Applications
+  - Helm charts
+  - Ingress Controller
+  - CNI plugin (Calico/Cilium/AWS VPC CNI)
+  - CSI drivers
+  - Monitoring stack (Prometheus, Grafana)
+- Back up the cluster state (for self-managed clusters, back up etcd; for managed services,
+ensure recovery options are available).
+
+Step 2: Upgrade the control plane
+for managed services like Amazon EKS, initiate the control plane upgrade through the 
+cloud provider.
+the control plane is highly available and upgraded by the provider, minimizing disruption.
+For self-managed clusters:
+ - upgrade kubeadm
+ - upgrade the control plane components one at a time
+ - verify cluster health after each step.
+
+Step 3: upgrade worker nodes (Rolling Upgrade)
+Upgrade worker nodes one at a time.
+For each node:
+- kubectl cordon <node-name>
+This prevents new pods from being scheduled.
+Drain the node:
+- kubectl drain <node-name> --ignore-daemonsets --delete-emptydir-data
+this safely evicts workloads and reschedules them to other nodes.
+Upgrade the node (or replace it with a new node if using managed node groups), the bring
+it back:
+- kubectl uncordon <node-name>
+Repeat this process for each worker node.
+
+Step 4: Ensure high availability
+to avoid downtime:
+- Run multiple replicas for applications.
+- Configure a PodDisruptionBudget(PDB) to ensure a minimum number of pods remain available
+during maintenance.
+- Use anti-afinity rules so replicas are spread across different nodes.
+replicas: 3
+- with three replicas, draining one node allows traffic to continue flowing to the 
+remaining healthy pods.
+
+Step 5: Verify workloads
+After each node upgrade, verify
+- Kubectls get nodes
+- kubectl get pods -A
+- kubectl get events
+
+check:
+- pod status
+- Readiness probes
+- Liveness probes
+- Application logs
+- Monitoring dashboards
+- critical application functionality.
+
+----------------------------------------------------------
+--------------------------------------------------------------------------------
+Q. Explain Kafka architecture.
+Q. What is MQTT, and where is it used?
+Q. 
