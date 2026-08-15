@@ -216,3 +216,147 @@ break
    print ("Response Body :", response.txt)
 
 --------------------------------------------------------------------------
+
+20) how to check the ip address is valid or not using python?
+-> import ipadress
+   ip = input("Enter IP address: ")
+   try:
+        ipaddress.ip_address(ip)
+        print("valid IP address")
+   except ValueError:
+        print("Invalid IP address")
+
+------------------------------------------------------------
+
+21) print the square no. using shell script from 2 to 10 no.?
+-> #!/bin/bash
+   for n in $(seq 2 10)
+do
+   SQ = $(($n * $n))
+echo "SQ $SQ"
+done
+----------------------------------------------------------------------
+
+22) Space remove from string, using shell script?
+-> #!/bin/bash
+   test = "some text with space"
+   echo "${test// /}"
+
+----------------------------------------------------------------------
+
+23) space remove from string using shell script?
+-> echo "some text with space" | tr -d ' '
+
+--------------------------------------------------------------------
+
+24) remove spacial character using shell script?
+-> cat file.txt | sed 's/[^a-zA-Z0-9]//g'
+
+----------------------------------------------------------------
+
+25) how to calculate the number of passed arguments?
+-> #!/bin/bash
+   echo "number of parameter passed: $#"
+
+---------------------------------------------------------------
+
+26) How to get script name inside a script?
+-> #!/bin/bash
+   echo "script name: $0"
+
+------------------------------------------------------------------
+
+27) how to check if the previous command was run successfully?
+-> #!/bin/bash
+   var = $?
+   if var = 0
+   then
+   echo "script was run successfully"
+   else
+   echo "script was run unsuccessfully"
+   fi
+
+---------------------------------------------------------------
+
+28) How to get the last line from a file using just the terminal?
+-> tail -1 <filename>
+
+---------------------------------------------------------------
+
+29) how to write a function in shell script?
+-> #!/bin/bash
+   function example()
+   {
+    echo "Hello Learner"
+   }
+    example
+
+---------------------------------------------------------------
+
+30) how to print pid of the current shell?
+-> #!/bin/bash
+   for pid in $$
+   do
+   echo $pid
+   done
+
+---------------------------------------------------------------
+
+31) how to print all array elements and their respective indexes?
+-> #!/bin/bash
+   array=("this" "is" "shell" "scripting")
+   echo ${array[@]}
+   echo${!array[@]}
+
+----------------------------------------------------------------
+
+32) how to print the first array element using shell script?
+-> #!/bin/bash
+   array = ("This" "is" "My" "script")
+   echo ${array [0]}
+
+--------------------------------------------------------------
+
+33) how to find all the files modified in less than 3 days and save the record in a test file?
+-> find . -type f -mtime -3 -exec ls -l {}; > last3days.txt
+
+------------------------------------------------------------
+
+34) How to find the length of a string data?
+-> #!/bin/bash
+   echo 'expr length "I like mac os"'
+   echo "I like linux" | wc -c
+
+----------------------------------------------------------
+
+35) find greater then 50 gb file.
+-> find / -type f -size +50G
+
+----------------------------------------------------------
+
+36) find and delete 100 mb files?
+-> find / -type f -size +100m -exec rm -f {} \;
+
+-----------------------------------------------------------
+
+37) delete all empty files from a directory?
+-> find . -name "*.*" -size 0c -exec rpm -fv {} \;
+
+-------------------------------------------------------------
+
+38) find the no. of count yahoo.com from a file?
+-> find . -name ankur.txt -exec grep -c yahoo.com '{}' \;
+
+--------------------------------------------------------------
+
+39) write a shell script for log rotate 7 days old?
+-> find / -type f -name "*.log" -mtime +7 -exec mv{} / \;
+
+----------------------------------------------------------------
+
+40) write a shell script for find the 30 days log file and compress it?
+-> find / -type f -name "*.log" -mtime +30 -exec gzip {}\;
+
+---------------------------------------------------------------
+
+41) 
