@@ -7211,4 +7211,8 @@ check:
 --------------------------------------------------------------------------------
 Q. Explain Kafka architecture.
 Q. What is MQTT, and where is it used?
-Q. 
+
+--------------------------------------------------------------
+Q. what is jenkins shared library?
+-> shared library is uesed to reusable the code. need to create a folder called vars and inside the folders we have write our shared library.
+---------------------------------------------------------------------
