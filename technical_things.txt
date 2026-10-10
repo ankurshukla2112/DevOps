@@ -7216,3 +7216,25 @@ Q. What is MQTT, and where is it used?
 Q. what is jenkins shared library?
 -> shared library is uesed to reusable the code. need to create a folder called vars and inside the folders we have write our shared library.
 ---------------------------------------------------------------------
+
+Q. How does Kubernetes decide which node to schedule a pod on?
+Q. What happens internally when you run kubectl apply?
+Q. How does Kubernetes service discovery work?
+Q. What is the difference between readiness and liveness probes internally?
+Q. How does Horizontal Pod Autoscaler (HPA) make scaling decisions?
+Q. What happens internally when you run docker run?
+Q. How does Docker layer caching work? 
+Q. How does Terraform dependency graph (DAG) work internally?
+Q. How does Terraform handle state locking and consistency?
+Q. What happens internally in a CI/CD pipeline from commit → deploy?
+Q. How does a pipeline handle parallel jobs and dependencies?
+Q. How does AWS Load Balancer route traffic?
+Q. What happens internally when you hit a CloudFront URL?
+Q. How does DNS resolution work step by step?
+Q. How does Git merge and rebase differ internally?
+Q. How does Kubernetes handle pod failures and self-healing?
+Q. What happens during a rolling deployment in Kubernetes?
+Q. How do logs, metrics, and traces work together in observability?
+Q. What happens when your system goes down - how do you approach it?
+
+20. What are the most common production mistakes in DevOps setups?
